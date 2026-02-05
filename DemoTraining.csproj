@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="EPiServer" />
+    <Using Include="EPiServer.Core" />
+    <Using Include="EPiServer.DataAbstraction" />
+    <Using Include="EPiServer.DataAnnotations" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="EPiServer.CMS" Version="12.34.2" />
+    <PackageReference Include="EPiServer.Forms" Version="5.10.6" />
+    <PackageReference Include="EPiServer.Labs.ContentManager" Version="1.2.0" />
+    <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
+    <PackageReference Include="Wangkanai.Detection" Version="8.20.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Translations\**\*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Features\Articles\Models\" />
+    <Folder Include="Features\Contact\Models\" />
+    <Folder Include="Features\Landing\Models\" />
+    <Folder Include="Features\Products\Models\" />
+    <Folder Include="Features\StartPage\Models\" />
+    <Folder Include="Components\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,6 @@
+@using DemoTraining.Models.ViewModels
+@model VideoViewModel
+
+<video controls poster="@Model.PreviewImageUrl">
+    <source src="@Url.Content(Model.Url.ToString())" type='video/mp4' />
+</video>

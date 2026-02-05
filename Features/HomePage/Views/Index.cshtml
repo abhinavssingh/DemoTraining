@@ -1,0 +1,12 @@
+﻿@using EPiServer.Web.Mvc.Html
+@model DemoTraining.Features.HomePage.Models.HomePage
+@{}
+<h1>@Html.PropertyFor(m => m.Heading)</h1>   
+<h2> @Html.PropertyFor(m => m.Description)</h2>
+@if (Model.Links != null)
+{
+    foreach (var linkItem in Model.Links)
+    {
+        <a data-epi-edit="Links" href="@linkItem.Href">@linkItem.Text</a>
+    }
+}

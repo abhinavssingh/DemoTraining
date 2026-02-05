@@ -1,0 +1,12 @@
+﻿@using DemoTraining.Models.Pages
+@using DemoTraining.Models.ViewModels
+@using EPiServer.Shell.Web.Mvc.Html
+@model IPageViewModel<SitePageData>
+
+<div class="container">
+    <div class="row">
+        <div class="alert text-center" role="alert">
+            @Html.Translate("/Readonly/Message")
+        </div>
+    </div>
+</div>
