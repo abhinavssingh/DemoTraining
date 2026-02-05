@@ -15,8 +15,6 @@
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="12.34.2" />
     <PackageReference Include="EPiServer.Forms" Version="5.10.6" />
-    <PackageReference Include="EPiServer.Labs.ContentManager" Version="1.2.0" />
-    <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
     <PackageReference Include="Wangkanai.Detection" Version="8.20.0" />
   </ItemGroup>
   

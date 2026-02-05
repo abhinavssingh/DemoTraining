@@ -1,8 +1,6 @@
 using DemoTraining.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
-using EPiServer.Labs.ContentManager;
-using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
@@ -31,8 +29,6 @@ namespace DemoTraining
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddCms()
                 .AddDemoTraining()
-                .AddContentManager()
-                .AddGridView(options => options.IsViewEnabled = true)
                 .AddAdminUserRegistration()
                 .AddEmbeddedLocalization<Startup>();
 
