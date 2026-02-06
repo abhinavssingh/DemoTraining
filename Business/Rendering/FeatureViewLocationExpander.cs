@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace DemoTraining.Business
+namespace DemoTraining.Business.Rendering
 {
     public class FeatureViewLocationExpander : IViewLocationExpander
     {

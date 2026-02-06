@@ -1,6 +1,8 @@
 using DemoTraining.Extensions;
 using EPiServer.Cms.Shell;
+using EPiServer.Cms.TinyMce.Core;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
@@ -29,6 +31,7 @@ namespace DemoTraining
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddCms()
                 .AddDemoTraining()
+                .AddGridView(options => options.IsViewEnabled = true)
                 .AddAdminUserRegistration()
                 .AddEmbeddedLocalization<Startup>();
 
@@ -41,6 +44,26 @@ namespace DemoTraining
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            services.AddContentDeliveryApi(options =>
+            {
+                options.SiteDefinitionApiEnabled = true;
+            });
+
+            services.Configure<TinyMceConfiguration>(config =>
+            {
+                config.RichtextExtension();
+
+                // firstlu comment out the above line and then uncooments and customize the configuration for all properties of type XhtmlString like this:
+                // uncooments and customize the configuration for a specific property on a specific content type like this:
+                //var customConfigForStandardPage = config
+                //.Default() // Start with default settings or another named configuration
+                //.AddPlugin("table") // Add specific plugins (e.g., source code view)
+                //.AppendToolbar("table epi-link | bold italic"); // Customize the toolbar button
+
+                //config.For<StandardPage>(x => x.MainBody, customConfigForStandardPage);
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
