@@ -20,9 +20,12 @@ namespace DemoTraining.Controllers
         public ViewResult Index(SitePageData currentPage)
         {
             var model = CreateModel(currentPage);
-            var pageType = currentPage.PageTypeName;
-            return View($"/Features/{pageType.Replace("Page", "")}/Views/index.cshtml",
-                        model);
+            // Use the page type (without the "Page" suffix) as the controller name so
+            // the view engine and any custom IViewLocationExpander (eg. FeatureViewLocationExpander)
+            // can resolve views under the Features folder and nested structures.
+            var pageType = currentPage.PageTypeName?.Replace("Page", "") ?? currentPage.GetOriginalType().Name;
+            ControllerContext.RouteData.Values["controller"] = pageType;
+            return View("Index", model);
         }
 
         /// <summary>

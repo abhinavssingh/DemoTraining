@@ -23,10 +23,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Features\Articles\Models\" />
     <Folder Include="Features\Contact\Models\" />
     <Folder Include="Features\Landing\Models\" />
-    <Folder Include="Features\Products\Models\" />
     <Folder Include="Features\StartPage\Models\" />
     <Folder Include="Components\" />
   </ItemGroup>
