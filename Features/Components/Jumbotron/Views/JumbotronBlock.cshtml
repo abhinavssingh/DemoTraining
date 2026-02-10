@@ -1,5 +1,6 @@
 @using DemoTraining.Features.Components.Jumbotron.Models
 @using EPiServer.Web.Mvc.Html
+@addTagHelper *, EPiServer.Cms.AspNetCore.TagHelpers
 @model JumbotronBlock
 
 <div style="background-image:url('@Url.ContentUrl(Model.Image)')">

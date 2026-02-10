@@ -30,10 +30,12 @@ namespace DemoTraining
             services
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddCms()
+                .AddCmsTagHelpers()
                 .AddDemoTraining()
                 .AddGridView(options => options.IsViewEnabled = true)
                 .AddAdminUserRegistration()
                 .AddEmbeddedLocalization<Startup>();
+
 
             // Required by Wangkanai.Detection
             services.AddDetection();
