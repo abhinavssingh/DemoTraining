@@ -1,0 +1,16 @@
+@using EPiServer.Web.Mvc.Html
+@{
+    var bagLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference;
+    var currentLink = bagLink == null ? EPiServer.Core.ContentReference.StartPage : bagLink;
+}
+<form action="@(Url.ContentUrl(currentLink) + "delete")" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label>Content reference</label>
+        <input name="contentReference" class="form-control" placeholder="Enter content reference" />
+    </div>
+    <div class="form-group">
+        <label><input name="hardDelete" type="checkbox" /> Hard delete</label>
+    </div>
+    <input type="submit" value="Delete" class="btn btn-danger" />
+</form>

@@ -1,0 +1,19 @@
+@using EPiServer.Web.Mvc.Html
+@{
+    var bagLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference;
+    var currentLink = bagLink == null ? EPiServer.Core.ContentReference.StartPage : bagLink;
+}
+<form action="@(Url.ContentUrl(currentLink) + "update")" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="currentPageLink" value="@currentLink" />
+    <div class="form-group">
+        <label for="contentReference">Content reference</label>
+        <input name="contentReference" id="contentReference" class="form-control" placeholder="Enter content reference" />
+    </div>
+    <div class="form-group">
+        <label for="newName">New name</label>
+        <input name="newName" id="newName" class="form-control" placeholder="Enter new name" />
+    </div>
+
+    <input type="submit" value="Update" class="btn btn-primary" />
+</form>

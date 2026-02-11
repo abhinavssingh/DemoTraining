@@ -1,0 +1,89 @@
+﻿@using DemoTraining.Features.Administrator.Models
+@using DemoTraining.Models.ViewModels
+@using EPiServer.Web.Mvc.Html
+@model PageViewModel<AdminContentPage>
+@{
+    var msg = TempData["message"] ?? ViewData["message"];
+}
+@if (msg != null)
+{
+    <div class="alert alert-success">
+        @msg
+    </div>
+}
+<div>
+    @{
+        // make current page link available to partials via ViewBag
+        ViewBag.CurrentPageLink = Model.CurrentPage?.ContentLink;
+    }
+    <label for="operationSelect">Select operation</label>
+    <select id="operationSelect" class="form-control" style="max-width:400px; margin-bottom:1rem;">
+        <option value="DeleteContent">Delete content</option>
+        <option value="CreatePage">Create page</option>
+        <option value="UpdatePage">Update page</option>
+        <option value="CreateBlock">Create block</option>
+        <option value="UpdateBlock">Update block</option>
+        <option value="DeleteBlock">Delete block</option>
+    </select>
+
+    <div class="op-section" data-op="DeleteContent">
+        <h3>Delete content</h3>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_Delete.cshtml")
+    </div>
+
+    <div class="op-section" data-op="CreatePage" style="display:none;">
+        <h3>Create page</h3>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_CreatePage.cshtml")
+    </div>
+
+    <div class="op-section" data-op="UpdatePage" style="display:none;">
+        <h3>Update page</h3>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_UpdatePage.cshtml")
+    </div>
+
+    <div class="op-section" data-op="CreateBlock" style="display:none;">
+        <h4>Create block</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_Block.cshtml")
+    </div>
+
+    <div class="op-section" data-op="UpdateBlock" style="display:none;">
+        <h4>Update block</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_UpdateBlock.cshtml")
+    </div>
+
+    <div class="op-section" data-op="DeleteBlock" style="display:none;">
+        <h4>Delete block</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_Delete.cshtml")
+    </div>
+
+    <script>
+        (function(){
+            var select = document.getElementById('operationSelect');
+            var sections = Array.prototype.slice.call(document.querySelectorAll('.op-section'));
+
+            function setDisabledForSection(section, disabled) {
+                var inputs = section.querySelectorAll('input, textarea, select, button');
+                for (var i = 0; i < inputs.length; i++) {
+                    // keep submit buttons enabled
+                    if (inputs[i].type && inputs[i].type.toLowerCase() === 'submit') continue;
+                    inputs[i].disabled = disabled;
+                }
+            }
+
+            function showFor(value) {
+                sections.forEach(function(s){
+                    var match = s.getAttribute('data-op') === value;
+                    s.style.display = match ? '' : 'none';
+                    setDisabledForSection(s, !match);
+                });
+            }
+
+            select.addEventListener('change', function(e){
+                showFor(e.target.value);
+            });
+
+            // Initialize: show selected
+            showFor(select.value);
+        })();
+    </script>
+</div>

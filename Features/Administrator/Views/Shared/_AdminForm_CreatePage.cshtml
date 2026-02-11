@@ -1,0 +1,13 @@
+@using EPiServer.Web.Mvc.Html
+@{
+    var bagLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference;
+    var currentLink = bagLink == null ? EPiServer.Core.ContentReference.StartPage : bagLink;
+}
+<form action="@(Url.ContentUrl(currentLink) + "create")" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input name="name" class="form-control" placeholder="Enter a pagename" />
+    </div>
+    <input type="submit" value="Create" class="btn btn-primary" />
+</form>
