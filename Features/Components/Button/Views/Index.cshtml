@@ -1,7 +1,5 @@
 @using DemoTraining.Features.Components.Button.Models
 @using EPiServer.Framework.Localization
-@addTagHelper *, EPiServer.Cms.AspNetCore.TagHelpers
-@using EPiServer.Web.Mvc.Html
 @model ButtonBlock
 
 <a class="btn btn-primary" title="@Model.ButtonText" href="@Url.ContentUrl(Model.ButtonLink)" epi-property="@Model.ButtonText">

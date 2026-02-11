@@ -46,13 +46,13 @@ public class StartPage : SitePageData
     public virtual LinkItemCollection ProductPageLinks { get; set; }
 
     [Display(GroupName = Globals.GroupNames.SiteSettings, Order = 350)]
-    public virtual LinkItemCollection CompanyInformationPageLinks { get; set; }
+    public virtual LinkItemCollection ResourcePageLinks { get; set; }
 
     [Display(GroupName = Globals.GroupNames.SiteSettings, Order = 400)]
-    public virtual LinkItemCollection NewsPageLinks { get; set; }
+    public virtual LinkItemCollection CompanyPageLinks { get; set; }
 
     [Display(GroupName = Globals.GroupNames.SiteSettings, Order = 450)]
-    public virtual LinkItemCollection CustomerZonePageLinks { get; set; }
+    public virtual LinkItemCollection SupportPageLinks { get; set; }
 
     [Display(GroupName = Globals.GroupNames.SiteSettings)]
     public virtual PageReference GlobalNewsPageLink { get; set; }

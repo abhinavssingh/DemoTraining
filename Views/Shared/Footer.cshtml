@@ -12,16 +12,16 @@
                 <ul epi-property="@Model.Layout.ProductPages" />
             </div>
             <div class="col-3">
+                <h3>@Html.Translate("/footer/resources")</h3>
+                <ul epi-property="@Model.Layout.ResourcePages" />
+            </div>
+            <div class="col-3">
                 <h3>@Html.Translate("/footer/company")</h3>
-                <ul epi-property="@Model.Layout.CompanyInformationPages" />
+                <ul epi-property="@Model.Layout.CompanyPages" />
             </div>
             <div class="col-3">
-                <h3>@Html.Translate("/footer/news")</h3>
-                <ul epi-property="@Model.Layout.NewsPages" />
-            </div>
-            <div class="col-3">
-                <h3>@Html.Translate("/footer/customerzone")</h3>
-                <ul epi-property="@Model.Layout.CustomerZonePages" />
+                <h3>@Html.Translate("/footer/support")</h3>
+                <ul epi-property="@Model.Layout.SupportPages" />
                 <ul>
                     <li>
                         @if (Model.Layout.LoggedIn)

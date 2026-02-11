@@ -21,9 +21,9 @@ public class StartPageController : PageControllerBase<StartPage>
             var editHints = ViewData.GetEditHints<PageViewModel<StartPage>, StartPage>();
             editHints.AddConnection(m => m.Layout.Logotype, p => p.SiteLogotype);
             editHints.AddConnection(m => m.Layout.ProductPages, p => p.ProductPageLinks);
-            editHints.AddConnection(m => m.Layout.CompanyInformationPages, p => p.CompanyInformationPageLinks);
-            editHints.AddConnection(m => m.Layout.NewsPages, p => p.NewsPageLinks);
-            editHints.AddConnection(m => m.Layout.CustomerZonePages, p => p.CustomerZonePageLinks);
+            editHints.AddConnection(m => m.Layout.ResourcePages, p => p.ResourcePageLinks);
+            editHints.AddConnection(m => m.Layout.CompanyPages, p => p.CompanyPageLinks);
+            editHints.AddConnection(m => m.Layout.SupportPages, p => p.SupportPageLinks);
         }
 
         return View("~/Features/StartPage/Views/Index.cshtml", model);

@@ -16,11 +16,11 @@ namespace DemoTraining.Models.ViewModels
 
         public LinkItemCollection ProductPages { get; set; }
 
-        public LinkItemCollection CompanyInformationPages { get; set; }
+        public LinkItemCollection ResourcePages { get; set; }
 
-        public LinkItemCollection NewsPages { get; set; }
+        public LinkItemCollection CompanyPages { get; set; }
 
-        public LinkItemCollection CustomerZonePages { get; set; }
+        public LinkItemCollection SupportPages { get; set; }
 
         public bool LoggedIn { get; set; }
 
