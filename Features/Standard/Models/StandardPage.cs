@@ -2,7 +2,7 @@ using DemoTraining.Models;
 using DemoTraining.Models.Pages;
 using System.ComponentModel.DataAnnotations;
 
-namespace DemoTraining.Features.Components.Standard.Models;
+namespace DemoTraining.Features.Standard.Models;
 
 [SiteContentType(
     DisplayName = "StandardPage",

@@ -1,4 +1,4 @@
-using DemoTraining.Features.Components.Standard.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
 
 namespace DemoTraining.Features.Articles.Models;

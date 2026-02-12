@@ -1,4 +1,4 @@
-using DemoTraining.Features.Components.Standard.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
 using Page = DemoTraining.Features.StartPage.Models;
 

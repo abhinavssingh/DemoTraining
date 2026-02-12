@@ -1,7 +1,7 @@
 using DemoTraining.Controllers;
 using DemoTraining.Features.Administrator.Models;
-using DemoTraining.Features.Components.Standard.Models;
 using DemoTraining.Features.Components.Teaser.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models.ViewModels;
 using EPiServer.DataAccess;
 using EPiServer.Framework.DataAnnotations;

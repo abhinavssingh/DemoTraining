@@ -1,8 +1,8 @@
 using DemoTraining.Features.Components.SitelogoType.Models;
-using DemoTraining.Features.Components.Standard.Models;
 using DemoTraining.Features.Landing.Models;
 using DemoTraining.Features.Products.Models;
 using DemoTraining.Features.Search.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
 using DemoTraining.Models.Pages;
 using EPiServer.SpecializedProperties;

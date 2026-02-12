@@ -1,6 +1,6 @@
 using DemoTraining.Business;
 using DemoTraining.Features.Articles.Models;
-using DemoTraining.Features.Components.Standard.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
 using DemoTraining.Models.Blocks;
 using EPiServer.Filters;

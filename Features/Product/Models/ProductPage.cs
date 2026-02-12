@@ -1,5 +1,5 @@
 using DemoTraining.Features.Components.Jumbotron.Models;
-using DemoTraining.Features.Components.Standard.Models;
+using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
 using DemoTraining.Models.Pages;
 using System.ComponentModel.DataAnnotations;
