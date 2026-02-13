@@ -1,0 +1,12 @@
+@{
+    var bagLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference;
+    var currentLink = bagLink == null ? EPiServer.Core.ContentReference.StartPage : bagLink;
+}
+<form action="@(Url.ContentUrl(currentLink) + "enablelanguage")" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="languageCode">Language code</label>
+        <input name="languageCode" id="languageCode" class="form-control" placeholder="e.g. en, sv-SE" />
+    </div>
+    <input type="submit" value="Enable language" class="btn btn-primary" />
+</form>

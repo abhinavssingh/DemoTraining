@@ -1,0 +1,16 @@
+@{
+    var bagLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference;
+    var currentLink = bagLink == null ? EPiServer.Core.ContentReference.StartPage : bagLink;
+}
+<form action="@(Url.ContentUrl(currentLink) + "deletesitedefinition")" method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="siteName">Site name (optional)</label>
+        <input name="siteName" id="siteName" class="form-control" placeholder="Enter a site name to delete" />
+    </div>
+    <div class="form-group">
+        <label for="hostName">Host name (optional)</label>
+        <input name="hostName" id="hostName" class="form-control" placeholder="Enter host name (e.g. example.local) to delete" />
+    </div>
+    <input type="submit" value="Delete site definition" class="btn btn-danger" />
+</form>

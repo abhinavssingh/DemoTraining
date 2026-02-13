@@ -6,6 +6,7 @@ using DemoTraining.Models.ViewModels;
 using EPiServer.DataAccess;
 using EPiServer.Framework.DataAnnotations;
 using EPiServer.Security;
+using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +18,19 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IContentRepository repo = null;
     private readonly IConfiguration configuration;
     private readonly IContentLoader contentLoader;
+    private readonly ISiteDefinitionRepository siteDefinitionRepository;
+    private readonly ILanguageBranchRepository languageBranchRepository;
 
-    public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader)
+    public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
+        ILanguageBranchRepository languageBranchRepository)
     {
         this.repo = repo;
         this.configuration = configuration;
         this.contentLoader = contentLoader;
+        this.siteDefinitionRepository = siteDefinitionRepository;
+        this.languageBranchRepository = languageBranchRepository;
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -199,6 +206,199 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
                                    .Select(contentRef => contentLoader.Get<IContent>(contentRef))
                                    .OfType<ContentFolder>();
         return allDescendants;
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult CreateSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(siteName) || string.IsNullOrWhiteSpace(hostName))
+            {
+                TempData["message"] = "Site name and host name are required.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            // Check for existing site definitions by name or host
+            var existing = siteDefinitionRepository.List()
+                .FirstOrDefault(sd => string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase)
+                    || sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase)));
+
+            if (existing != null)
+            {
+                TempData["message"] = "A site definition with that name or host already exists.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var siteDef = new SiteDefinition
+            {
+                Name = siteName,
+                SiteUrl = new Uri($"http://{hostName}"),
+                StartPage = currentPage.ContentLink
+            };
+
+            // Add host definition
+            var hostDef = new HostDefinition { Name = hostName };
+            siteDef.Hosts.Add(hostDef);
+
+            siteDefinitionRepository.Save(siteDef);
+
+            TempData["message"] = $"Site definition '{siteName}' created for host '{hostName}'.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error creating site definition: {ex.Message}";
+        }
+
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult DeleteSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(siteName) && string.IsNullOrWhiteSpace(hostName))
+            {
+                TempData["message"] = "Provide site name or host name to delete a site definition.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var existing = siteDefinitionRepository.List()
+                .FirstOrDefault(sd => (!string.IsNullOrWhiteSpace(siteName) && string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase))
+                    || (sd.Hosts != null && !string.IsNullOrWhiteSpace(hostName) && sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase))));
+
+            if (existing == null)
+            {
+                TempData["message"] = "No matching site definition found to delete.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            siteDefinitionRepository.Delete(existing.Id);
+            TempData["message"] = $"Site definition '{existing.Name}' was deleted.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error deleting site definition: {ex.Message}";
+        }
+
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult EnableLanguage(AdminContentPage currentPage, string languageCode)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(languageCode))
+            {
+                TempData["message"] = "Language code is required.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+            // Check for existing language
+            var langExist = IsLanguageEnabled(languageCode);
+
+            if (langExist == null)
+            {
+                TempData["message"] = $"Language '{languageCode}' doesn't exist.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var lang = langExist.CreateWritableClone();
+            var status = lang.Enabled;
+            if (!status)
+            {
+                lang.Enabled = true;
+            }
+            else
+            {
+                TempData["message"] = $"Language '{languageCode}' is already enabled.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            languageBranchRepository.Save(lang);
+
+            TempData["message"] = $"Language '{languageCode}' enabled.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error enabling language: {ex.Message}";
+        }
+
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult TranslatePage(AdminContentPage currentPage, ContentReference contentReference, string targetLanguage)
+    {
+        try
+        {
+            if (contentReference == null || ContentReference.IsNullOrEmpty(contentReference) || string.IsNullOrWhiteSpace(targetLanguage))
+            {
+                TempData["message"] = "Content reference and target language are required for translation.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            // Check for existing language
+            var langExist = IsLanguageEnabled(targetLanguage);
+
+            if (langExist == null)
+            {
+                TempData["message"] = $"Language '{targetLanguage}' doesn't exist.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var status = langExist.Enabled;
+            if (status)
+            {
+                var content = repo.Get<IContent>(contentReference);
+                if (content == null)
+                {
+                    TempData["message"] = "Content not found for translation.";
+                    return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+                }
+                var translated = repo.CreateLanguageBranch<PageData>(contentReference, new System.Globalization.CultureInfo(targetLanguage));
+                if (translated != null)
+                {
+                    translated.Name = $"{content.Name} - {targetLanguage}";
+
+                    repo.Save(translated, SaveAction.Publish, AccessLevel.NoAccess);
+                    TempData["message"] = $"Content '{content.Name}' was translated to '{targetLanguage}'.";
+                }
+                else
+                {
+                    TempData["message"] = $"Failed to create translation for content '{content.Name}' to '{targetLanguage}'.";
+                }
+
+
+            }
+            else
+            {
+                TempData["message"] = $"Language '{targetLanguage}' is not enabled.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error translating content: {ex.Message}";
+        }
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    private LanguageBranch IsLanguageEnabled(string languageCode)
+    {
+        var lang = languageBranchRepository.Load(languageCode);
+        if (lang != null)
+        {
+            return lang;
+        }
+        return null;
     }
 
 }

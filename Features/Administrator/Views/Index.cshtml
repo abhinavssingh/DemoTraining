@@ -22,6 +22,10 @@
         <option value="CreateBlock">Create block</option>
         <option value="UpdateBlock">Update block</option>
         <option value="DeleteBlock">Delete block</option>
+        <option value="CreateSiteDefinition">Create site definition</option>
+        <option value="DeleteSiteDefinition">Delete site definition</option>
+         <option value="EnableLanguage">Enable language</option>
+        <option value="TranslatePage">Translate page</option>
     </select>
 
     <div class="op-section" data-op="DeleteContent">
@@ -52,6 +56,26 @@
     <div class="op-section" data-op="DeleteBlock" style="display:none;">
         <h4>Delete block</h4>
         @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_Delete.cshtml")
+    </div>
+
+    <div class="op-section" data-op="CreateSiteDefinition" style="display:none;">
+        <h4>Create site definition</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_CreateSiteDefinition.cshtml")
+    </div>
+
+    <div class="op-section" data-op="DeleteSiteDefinition" style="display:none;">
+        <h4>Delete site definition</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_DeleteSiteDefinition.cshtml")
+    </div>
+
+    <div class="op-section" data-op="EnableLanguage" style="display:none;">
+        <h4>Create language</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_EnableLanguage.cshtml")
+    </div>
+
+    <div class="op-section" data-op="TranslatePage" style="display:none;">
+        <h4>Translate page</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_TranslatePage.cshtml")
     </div>
 
     <script>
