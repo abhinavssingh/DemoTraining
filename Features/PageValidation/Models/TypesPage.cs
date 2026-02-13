@@ -1,4 +1,5 @@
 using DemoTraining.Features.PageValidation.Business;
+using DemoTraining.Models.Pages;
 using EPiServer.Cms.Shell.UI.ObjectEditing.EditorDescriptors;
 using EPiServer.Shell.ObjectEditing;
 using EPiServer.SpecializedProperties;
@@ -11,7 +12,7 @@ namespace DemoTraining.Features.PageValidation.Models;
     DisplayName = "TypesPage",
     GUID = "68401453-E8B9-49ED-A4D9-205B0D1EEB35",
     Description = "Use this to explore property types.")]
-public class TypesPage : PageData
+public class TypesPage : SitePageData
 {
     #region Supported .NET types
 
@@ -21,7 +22,7 @@ public class TypesPage : PageData
     public virtual string LongText { get; set; }
 
     [StringLength(65, MinimumLength = 5)]
-    public virtual string MetaTitle { get; set; }
+    public override string MetaTitle { get; set; }
 
     [RegularExpression(@"[a-z0-9\.]+@[a-z0-9\.]+", ErrorMessage = "Enter a valid email address.")]
     public virtual string ContactAddress { get; set; }

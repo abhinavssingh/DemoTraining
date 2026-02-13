@@ -1,11 +1,11 @@
-﻿@using EPiServer.Web.Mvc.Html
-@model DemoTraining.Features.HomePage.Models.HomePage
+﻿@using DemoTraining.Features.HomePage.Models
+@model PageViewModel<HomePage>
 @{}
-<h1>@Html.PropertyFor(m => m.Heading)</h1>   
-<h2> @Html.PropertyFor(m => m.Description)</h2>
-@if (Model.Links != null)
+<h1>@Html.PropertyFor(m => m.CurrentPage.Heading)</h1>   
+<h2> @Html.PropertyFor(m => m.CurrentPage.Description)</h2>
+@if (Model.CurrentPage.Links != null)
 {
-    foreach (var linkItem in Model.Links)
+    foreach (var linkItem in Model.CurrentPage.Links)
     {
         <a data-epi-edit="Links" href="@linkItem.Href">@linkItem.Text</a>
     }

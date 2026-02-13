@@ -1,65 +1,64 @@
-﻿@using EPiServer.Web.Mvc.Html
-@model DemoTraining.Features.CmsFieldTypes.Models.PropertyTypesDemoPage
+﻿@using DemoTraining.Features.CmsFieldTypes.Models
+@model PageViewModel<PropertyTypesDemoPage>
 @{
 }
 
 <h3>Richtext</h3>
-<h3>@Html.PropertyFor(m => m.RichText   )</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.RichText   )</h3>
 
 <h3>Localize Rich Text</h3>
-<h3>@Html.PropertyFor(m => m.LocalizableRichText)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.LocalizableRichText)</h3>
 
 <h3>Single Line Text</h3>
-<h3>@Html.PropertyFor(m => m.SingleLineText)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.SingleLineText)</h3>
 
 <h3>Single Line Text with Limitation</h3>
-<h3>@Html.PropertyFor(m => m.SingleLineText5to15chars)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.SingleLineText5to15chars)</h3>
 
 <h3>Multiline Text</h3>
-<h3>@Html.PropertyFor(m => m.MultilineText)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.MultilineText)</h3>
 
 <h3>EmailAddress Text</h3>
-<h3>@Html.PropertyFor(m => m.EmailAddress)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.EmailAddress)</h3>
 
 <h3>Integer</h3>
-<h3>@Html.PropertyFor(m => m.Integer)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.Integer)</h3>
 
 <h3>Integer with Range</h3>
-<h3>@Html.PropertyFor(m => m.Integer18to65)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.Integer18to65)</h3>
 
 <h3>Float Number</h3>
-<h3>@Html.PropertyFor(m => m.Float)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.Float)</h3>
 
 <h3>Day of Week</h3>
-<h3>@Html.PropertyFor(m => m.DayOfWeek)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.DayOfWeek)</h3>
 
 <h3>Day of Week from Dropdown</h3>
-<h3>@Html.PropertyFor(m => m.DayOfWeekDropDown)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.DayOfWeekDropDown)</h3>
 
 <h3>Reference Single Content Item</h3>
-<h3>@Html.PropertyFor(m => m.ReferenceContentItem)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferenceContentItem)</h3>
 
 <h3>Reference Multiple Content Items</h3>
-<h3>@Html.PropertyFor(m => m.ReferenceContentItems)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferenceContentItems)</h3>
 
 <h3>Reference Single Block Item</h3>
-<h3>@Html.PropertyFor(m => m.ReferenceBlock)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferenceBlock)</h3>
 
 <h3>Reference Single Image Item</h3>
-<h3>@Html.PropertyFor(m => m.ReferenceImage)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferenceImage)</h3>
 
 <h3>Reference Single Page</h3>
-<h3>@Html.PropertyFor(m => m.ReferencePage)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferencePage)</h3>
 
 <h3>Reference Multiple Pages</h3>
-<h3>@Html.PropertyFor(m => m.ReferencePages)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.ReferencePages)</h3>
 
 <@* h3>Reference Single Image Url</h3>
-<h3>@Html.PropertyFor(m => m.SingleImageUrl)</h3> *@
+<h3>@Html.PropertyFor(m => m.CurrentPage.SingleImageUrl)</h3> *@
 
 <h3>Reference Multiple Videos</h3>
-<h3>@Html.PropertyFor(m => m.MultipleVideoUrls)</h3>
+<h3>@Html.PropertyFor(m => m.CurrentPage.MultipleVideoUrls)</h3>
 
 <h3>Boolean</h3>
-<h3>@Html.PropertyFor(m => m.Active)</h3>
-
+<h3>@Html.PropertyFor(m => m.CurrentPage.Active)</h3>

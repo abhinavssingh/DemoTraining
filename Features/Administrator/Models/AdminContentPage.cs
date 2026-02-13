@@ -1,5 +1,5 @@
-using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models;
+using DemoTraining.Models.Pages;
 using Page = DemoTraining.Features.StartPage.Models;
 
 namespace DemoTraining.Features.Administrator.Models;
@@ -11,7 +11,7 @@ namespace DemoTraining.Features.Administrator.Models;
     Description = "")]
 [SiteImageUrl]
 [AvailableContentTypes(IncludeOn = new[] { typeof(Page.StartPage) })]
-public class AdminContentPage : StandardPage
+public class AdminContentPage : SitePageData
 {
 
 }

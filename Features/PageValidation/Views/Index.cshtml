@@ -1,9 +1,9 @@
-﻿@using EPiServer.Web.Mvc.Html
-@model DemoTraining.Features.PageValidation.Models.TypesPage
+﻿@using DemoTraining.Features.PageValidation.Models
+@model PageViewModel<TypesPage>
 
 <div>
-    @Html.PropertyFor(m => m.MultiplePages)
+    @Html.PropertyFor(m => m.CurrentPage.MultiplePages)
 </div>
 <div>
-    @Html.PropertyFor(m => m.MultiplePagesList)
+    @Html.PropertyFor(m => m.CurrentPage.MultiplePagesList)
 </div>

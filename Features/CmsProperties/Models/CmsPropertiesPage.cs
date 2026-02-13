@@ -1,3 +1,4 @@
+using DemoTraining.Models.Pages;
 using System.ComponentModel.DataAnnotations;
 
 namespace DemoTraining.Features.CmsProperties.Models;
@@ -8,7 +9,7 @@ namespace DemoTraining.Features.CmsProperties.Models;
     Description = "this is used to display CMS properties",
     GroupName = "Training",
     Order = 20)]
-public class CmsPropertiesPage : PageData
+public class CmsPropertiesPage : SitePageData
 {
     [CultureSpecific]
     [Display(

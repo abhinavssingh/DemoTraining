@@ -1,3 +1,5 @@
+using DemoTraining.Models.Pages;
+using DemoTraining.Models.ViewModels;
 using EPiServer.Framework.DataAnnotations;
 using EPiServer.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,20 @@ public class HomePageController : PageController<Home.HomePage>
     {
         // Implementation of action. You can create your own view model class that you pass to the view or
         // you can pass the page type model directly for simpler templates
+        var model = CreateModel(currentPage);
+        return View("~/Features/HomePage/Views/Index.cshtml", model);
+    }
 
-        return View("~/Features/HomePage/Views/Index.cshtml", currentPage);
+
+    /// <summary>
+    /// Creates a PageViewModel where the type parameter is the type of the page.
+    /// </summary>
+    /// <remarks>
+    /// Used to create models of a specific type without the calling method having to know that type.
+    /// </remarks>
+    private static IPageViewModel<SitePageData> CreateModel(SitePageData page)
+    {
+        var type = typeof(PageViewModel<>).MakeGenericType(page.GetOriginalType());
+        return Activator.CreateInstance(type, page) as IPageViewModel<SitePageData>;
     }
 }

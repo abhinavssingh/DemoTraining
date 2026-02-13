@@ -1,15 +1,16 @@
-﻿@using EPiServer.Web.Mvc.Html
-@model DemoTraining.Features.CmsProperties.Models.CmsPropertiesPage
+﻿@using DemoTraining.Features.CmsProperties.Models
+@model PageViewModel<CmsPropertiesPage>
+
 @{}
 <table class="table">
     <thead>
         <tr>
-            <th>@Html.PropertyFor(m => m.CmsPropertyName)</th>
-            <th>@Html.PropertyFor(m => m.CmsPropertyValue)</th>
+            <th>@Html.PropertyFor(m => m.CurrentPage.CmsPropertyName)</th>
+            <th>@Html.PropertyFor(m => m.CurrentPage.CmsPropertyValue)</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (PropertyData prop in Model.Property)
+        @foreach (PropertyData prop in Model.CurrentPage.Property)
         {
             <tr>
                 <td>@prop.Name</td>

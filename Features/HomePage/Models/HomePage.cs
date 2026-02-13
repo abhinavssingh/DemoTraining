@@ -1,3 +1,4 @@
+using DemoTraining.Models.Pages;
 using EPiServer.SpecializedProperties;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,7 +9,7 @@ namespace DemoTraining.Features.HomePage.Models;
     GUID = "4B7ADF4C-160D-4D9E-9805-FC2C6247BCE0",
     Description = "Use this page for the home page of the website",
     GroupName = "Training", Order = 10)]
-public class HomePage : PageData
+public class HomePage : SitePageData
 {
     [CultureSpecific]
     [Display(

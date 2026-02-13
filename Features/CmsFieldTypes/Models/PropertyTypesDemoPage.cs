@@ -1,4 +1,5 @@
 using DemoTraining.Features.CmsFieldTypes.Business;
+using DemoTraining.Models.Pages;
 using EPiServer.Shell.ObjectEditing;
 using EPiServer.SpecializedProperties;
 using EPiServer.Web;
@@ -10,7 +11,7 @@ namespace DemoTraining.Features.CmsFieldTypes.Models;
     DisplayName = "PropertyTypesDemoPage",
     GUID = "4E0BF54A-8953-4303-A949-AA38F052ADDA",
     Description = "Use this page to demonstrate various types used for properties.", GroupName = "Training Field Types")]
-public class PropertyTypesDemoPage : PageData
+public class PropertyTypesDemoPage : SitePageData
 {
     [Display(Name = "Rich text", Order = 10, GroupName = PropertyTypesDemoPageTabs.Text)]
     public virtual XhtmlString RichText { get; set; }

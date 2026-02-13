@@ -14,6 +14,24 @@ Prerequisities
 $ dotnet run
 ````
 
+### How to deploy to IIS
+- Follow the [official Optimizely guide](https://docs.developers.optimizely.com/content-management-system/docs/deploying-to-windows-servers) to deploy the application to IIS.
+- Copy all the configuration from environment json file to the default appsettings.json file and make sure to update the connection string to point to the correct database server.
+- configuartion should be like below:
+
+```json
+{
+  "ConnectionStrings": {
+	"EPiServerDB": "Data Source=<your_server>;Initial Catalog=<your_database>;User ID=<sql_user>;Password=<sql_password>;Encrypt=True;TrustServerCertificate=True;Connect Timeout=30"
+  },
+  "CMS": {
+	"AdminUsername": "admin",
+	"AdminPassword": "admin",
+	"AdminEmail": "
+	}
+}
+```
+
 ### Any OS with Docker
 
 Prerequisities
