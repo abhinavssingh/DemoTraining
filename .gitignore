@@ -21,3 +21,4 @@ modules/
 thumbs.db
 ehthumbs.db
 desktop.ini
+/appsettings.Development.json
