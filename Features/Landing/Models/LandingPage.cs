@@ -17,12 +17,12 @@ public class LandingPage : SitePageData
     [CultureSpecific]
     public virtual ContentArea MainContentArea { get; set; }
 
-    public override void SetDefaultValues(ContentType contentType)
-    {
-        base.SetDefaultValues(contentType);
+    //public override void SetDefaultValues(ContentType contentType)
+    //{
+    //    base.SetDefaultValues(contentType);
 
-        HideSiteFooter = true;
-        HideSiteHeader = true;
-    }
+    //    HideSiteFooter = true;
+    //    HideSiteHeader = true;
+    //}
 }
 
