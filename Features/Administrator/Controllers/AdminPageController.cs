@@ -3,6 +3,7 @@ using DemoTraining.Features.Administrator.Models;
 using DemoTraining.Features.Components.Teaser.Models;
 using DemoTraining.Features.Standard.Models;
 using DemoTraining.Models.ViewModels;
+using EPiServer.DataAbstraction.Activities;
 using EPiServer.DataAccess;
 using EPiServer.Framework.DataAnnotations;
 using EPiServer.Security;
@@ -20,15 +21,17 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IContentLoader contentLoader;
     private readonly ISiteDefinitionRepository siteDefinitionRepository;
     private readonly ILanguageBranchRepository languageBranchRepository;
+    private readonly IActivityQueryService activityQueryService;
 
     public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
-        ILanguageBranchRepository languageBranchRepository)
+        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService)
     {
         this.repo = repo;
         this.configuration = configuration;
         this.contentLoader = contentLoader;
         this.siteDefinitionRepository = siteDefinitionRepository;
         this.languageBranchRepository = languageBranchRepository;
+        this.activityQueryService = activityQueryService;
     }
 
 
@@ -65,6 +68,52 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
 
         var redirectUrl = UrlResolver.Current.GetUrl(currentPage.ContentLink);
         return Redirect(redirectUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<ActionResult> ActivityCounts(AdminContentPage currentPage, DateTime? startDate, DateTime? endDate)
+    {
+        try
+        {
+            if (activityQueryService == null)
+            {
+                TempData["message"] = "Activity query service is not available.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            // Default to last 15 days if not provided
+            var start = startDate ?? DateTime.UtcNow.AddDays(-15);
+            var end = endDate ?? DateTime.UtcNow;
+
+            var query = new ActivityQuery
+            {
+                CreatedAfter = start,
+                CreatedBefore = end,
+                IncludeArchived = false,
+                MaxResults = 100,
+            };
+
+            var results = await activityQueryService.ListActivitiesAsync(query);
+
+            if (results == null)
+            {
+                TempData["message"] = "No activities found or error retrieving activities.";
+            }
+            else
+            {
+                var count = results.Count();
+                TempData["message"] = $"Found {count} activities between {start:u} and {end:u}.";
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error querying activities: {ex.Message}";
+        }
+
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 
     [HttpPost]

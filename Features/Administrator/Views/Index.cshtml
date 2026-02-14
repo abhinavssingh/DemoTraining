@@ -26,6 +26,7 @@
         <option value="DeleteSiteDefinition">Delete site definition</option>
          <option value="EnableLanguage">Enable language</option>
         <option value="TranslatePage">Translate page</option>
+        <option value="ActivityCounts">Activity counts</option>
     </select>
 
     <div class="op-section" data-op="DeleteContent">
@@ -76,6 +77,11 @@
     <div class="op-section" data-op="TranslatePage" style="display:none;">
         <h4>Translate page</h4>
         @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_TranslatePage.cshtml")
+    </div>
+
+    <div class="op-section" data-op="ActivityCounts" style="display:none;">
+        <h4>Activity counts</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_ActivityCounts.cshtml")
     </div>
 
     <script>
