@@ -72,52 +72,6 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> ActivityCounts(AdminContentPage currentPage, DateTime? startDate, DateTime? endDate)
-    {
-        try
-        {
-            if (activityQueryService == null)
-            {
-                TempData["message"] = "Activity query service is not available.";
-                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-            }
-
-            // Default to last 15 days if not provided
-            var start = startDate ?? DateTime.UtcNow.AddDays(-15);
-            var end = endDate ?? DateTime.UtcNow;
-
-            var query = new ActivityQuery
-            {
-                CreatedAfter = start,
-                CreatedBefore = end,
-                IncludeArchived = false,
-                MaxResults = 100,
-            };
-
-            var results = await activityQueryService.ListActivitiesAsync(query);
-
-            if (results == null)
-            {
-                TempData["message"] = "No activities found or error retrieving activities.";
-            }
-            else
-            {
-                var count = results.Count();
-                TempData["message"] = $"Found {count} activities between {start:u} and {end:u}.";
-            }
-
-
-        }
-        catch (Exception ex)
-        {
-            TempData["message"] = $"Error querying activities: {ex.Message}";
-        }
-
-        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
     public ActionResult UpdateBlock(AdminContentPage currentPage, ContentReference contentReference, string heading, string text, ContentReference image, PageReference link)
     {
         try
@@ -247,14 +201,6 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
             TempData["message"] = $"Error deleting content: {ex.Message}";
             return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
         }
-    }
-
-    private IEnumerable<ContentFolder> GetAllBlockFolders(ContentReference root)
-    {
-        var allDescendants = contentLoader.GetDescendents(root)
-                                   .Select(contentRef => contentLoader.Get<IContent>(contentRef))
-                                   .OfType<ContentFolder>();
-        return allDescendants;
     }
 
     [HttpPost]
@@ -440,6 +386,111 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<ActionResult> ActivityCounts(AdminContentPage currentPage, DateTime? startDate, DateTime? endDate, string activityType)
+    {
+        try
+        {
+            if (activityQueryService == null)
+            {
+                TempData["message"] = "Activity query service is not available.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            if (string.IsNullOrWhiteSpace(activityType))
+            {
+                TempData["message"] = "No activity type selected.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            // Default to last 15 days if not provided
+            var start = startDate ?? DateTime.UtcNow.AddDays(-15);
+            var end = endDate ?? DateTime.UtcNow;
+            ActivityQuery query;
+
+            if (string.Equals(activityType, "ItemAdded", StringComparison.OrdinalIgnoreCase))
+            {
+                query = new ActivityQuery
+                {
+                    ActivityType = ActivityType.Content,
+                    Action = (int)ContentActionType.Create,
+                    CreatedAfter = start,
+                    CreatedBefore = end,
+                    IncludeArchived = false,
+                    MaxResults = 1000
+                };
+
+                var results = await activityQueryService.ListActivitiesAsync(query);
+
+                if (results == null || !results.Any())
+                {
+                    TempData["message"] = "No activities found for the selected activity type or error retrieving activities.";
+                }
+                else
+                {
+                    var count = results.Count();
+                    TempData["message"] = $"Found {count} activities of type '{activityType}' between {start:u} and {end:u}.";
+                }
+            }
+            else if (string.Equals(activityType, "Publish", StringComparison.OrdinalIgnoreCase))
+            {
+                query = new ActivityQuery
+                {
+                    ActivityType = ActivityType.Content,
+                    Action = (int)ContentActionType.Publish,
+                    CreatedAfter = start,
+                    CreatedBefore = end,
+                    IncludeArchived = false,
+                    MaxResults = 1000
+                };
+
+                var results = await activityQueryService.ListActivitiesAsync(query);
+
+                if (results == null || !results.Any())
+                {
+                    TempData["message"] = "No activities found for the selected activity type or error retrieving activities.";
+                }
+                else
+                {
+                    var count = results.Count();
+                    TempData["message"] = $"Found {count} activities of type '{activityType}' between {start:u} and {end:u}.";
+                }
+            }
+            else if (string.Equals(activityType, "Deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                query = new ActivityQuery
+                {
+                    ActivityType = ActivityType.Content,
+                    Action = (int)ContentActionType.Delete,
+                    CreatedAfter = start,
+                    CreatedBefore = end,
+                    IncludeArchived = false,
+                    MaxResults = 1000
+                };
+
+                var results = await activityQueryService.ListActivitiesAsync(query);
+
+                if (results == null || !results.Any())
+                {
+                    TempData["message"] = "No activities found for the selected activity type or error retrieving activities.";
+                }
+                else
+                {
+                    var count = results.Count();
+                    TempData["message"] = $"Found {count} activities of type '{activityType}' between {start:u} and {end:u}.";
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error querying activities: {ex.Message}";
+        }
+
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
     private LanguageBranch IsLanguageEnabled(string languageCode)
     {
         var lang = languageBranchRepository.Load(languageCode);
@@ -448,6 +499,14 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
             return lang;
         }
         return null;
+    }
+
+    private IEnumerable<ContentFolder> GetAllBlockFolders(ContentReference root)
+    {
+        var allDescendants = contentLoader.GetDescendents(root)
+                                   .Select(contentRef => contentLoader.Get<IContent>(contentRef))
+                                   .OfType<ContentFolder>();
+        return allDescendants;
     }
 
 }

@@ -5,11 +5,12 @@
 <form action="@(Url.ContentUrl(currentLink) + "activitycounts")" method="post">
     @Html.AntiForgeryToken()
     <div class="form-group">
-@*         <label for="activityType">Activity</label>
+        <label for="activityType">Activity</label>
         <select name="activityType" id="activityType" class="form-control">
-            <option value="Created">Created</option>
-            <option value="Published">Published</option>
-        </select> *@
+            <option value="itemAdded">Item Added</option>
+            <option value="publish">Publish</option>
+            <option value="deleted">Deleted</option>
+        </select>
     </div>
     <div class="form-group">
         <label for="startDate">Start date</label>
