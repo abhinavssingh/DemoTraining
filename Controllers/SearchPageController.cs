@@ -1,5 +1,6 @@
 using DemoTraining.Features.Search.Models;
-using DemoTraining.Models.ViewModels;
+using EPiServer.Find;
+using EPiServer.Find.Framework;
 using EPiServer.Framework.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,15 +11,23 @@ public class SearchPageController : PageControllerBase<SearchPage>
 {
     public ViewResult Index(SearchPage currentPage, string q)
     {
-        var model = new SearchContentModel(currentPage)
+        var model = new SearchContentModel(currentPage, q);
+        if (String.IsNullOrEmpty(q))
         {
-            Hits = Enumerable.Empty<SearchContentModel.SearchHit>(),
-            NumberOfHits = 0,
-            SearchServiceDisabled = true,
-            SearchedQuery = q
+            return View(model);
+        }
+
+        var unifiedSearch = SearchClient.Instance.UnifiedSearchFor(q);
+        var results = unifiedSearch.GetResultAsync().Result;
+        var resultModel = new SearchContentModel(currentPage, q)
+        {
+            Results = results,
+            NumberOfHits = results.Hits.Count(),
+            SearchServiceDisabled = false,
+
         };
 
-        return View("~/Features/Search/Views/Index.cshtml", model);
+        return View("~/Features/Search/Views/Index.cshtml", resultModel);
     }
 }
 
