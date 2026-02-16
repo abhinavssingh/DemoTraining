@@ -30,6 +30,7 @@ namespace DemoTraining
             services
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddCms()
+                .AddFind()
                 .AddCmsTagHelpers()
                 .AddDemoTraining()
                 .AddGridView(options => options.IsViewEnabled = true)

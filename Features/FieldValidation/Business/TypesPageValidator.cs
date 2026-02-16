@@ -3,9 +3,9 @@ using EPiServer.Validation;
 
 namespace DemoTraining.Features.PageValidation.Business
 {
-    public class TypesPageValidator : IValidate<TypesPage>
+    public class TypesPageValidator : IValidate<FieldValidationPage>
     {
-        public IEnumerable<ValidationError> Validate(TypesPage instance)
+        public IEnumerable<ValidationError> Validate(FieldValidationPage instance)
         {
             var errors = new List<ValidationError>();
 

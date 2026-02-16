@@ -12,7 +12,7 @@ namespace DemoTraining.Features.PageValidation.Models;
     DisplayName = "TypesPage",
     GUID = "68401453-E8B9-49ED-A4D9-205B0D1EEB35",
     Description = "Use this to explore property types.")]
-public class TypesPage : SitePageData
+public class FieldValidationPage : SitePageData
 {
     #region Supported .NET types
 
@@ -86,7 +86,7 @@ public class TypesPage : SitePageData
     public virtual PageReference SinglePage { get; set; }
 
     [Display(GroupName = "Content Reference Types")]
-    [AllowedTypes(typeof(HomePage.Models.HomePage), typeof(TypesPage))]
+    [AllowedTypes(typeof(HomePage.Models.HomePage), typeof(FieldValidationPage))]
     public virtual PageReference SingleStartOrTypesPage { get; set; }
 
     [Display(GroupName = "Content Reference Types")]
