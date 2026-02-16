@@ -36,7 +36,7 @@
             @{
                 using (Html.BeginForm(null, null, Html.ViewContext.IsInEditMode() ? FormMethod.Post : FormMethod.Get, new { @action = Model.Layout.SearchActionUrl }))
                 {
-                    <input type="text" class="search-query" name="q" id="SearchKeywords" placeholder="@Html.Translate("/mainnavigation/search")" />
+                    <input type="text" class="search-query" name="q.Q" id="SearchKeywords" placeholder="@Html.Translate("/mainnavigation/search")" />
                     <input type="submit" class="searchButton" id="SearchButton" value="Search" />
                 }
             }

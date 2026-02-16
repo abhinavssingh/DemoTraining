@@ -6,15 +6,40 @@
 }
 
 <div class="row">
-    <div class="span8,search-form">
-        @{
-            using (Html.BeginForm(null, null, Html.ViewContext.IsInEditMode() ? FormMethod.Post : FormMethod.Get, new { @action = Model.Layout.SearchActionUrl }))
+    @using (Html.BeginForm(null, null, Html.ViewContext.IsInEditMode() ? FormMethod.Post : FormMethod.Get, new { @action = Model.Layout.SearchActionUrl }))
+    {
+        <div class="span8 search-form">
+            <input type="text" tabindex="1" name="q.Q" value="@Model.SearchedQuery?.Q" />
+            
+            <select name="PageSize">
+                <option value="10" selected="@(Model.SearchedQuery.PageSize == 10)">10</option>
+                <option value="20" selected="@(Model.SearchedQuery.PageSize == 20)">20</option>
+                <option value="50" selected="@(Model.SearchedQuery.PageSize == 50)">50</option>
+            </select>
+
+            <input type="submit" tabindex="2" class="btn" value="@Html.Translate("/searchpagetemplate/searchbutton")" disabled="@(Model.SearchServiceDisabled ? "disabled" : null)" />
+        </div>
+
+        <div class="facets">
+            @foreach (var facet in Model.Facets)
             {
-                <input type="text" tabindex="1" name="q" value="@Model.SearchedQuery" />
-                <input type="submit" tabindex="2" class="btn" value="@Html.Translate("/searchpagetemplate/searchbutton")" disabled="@(Model.SearchServiceDisabled ? "disabled" : null)" />
+                <fieldset>
+                    <legend>@facet.Name</legend>
+                    @foreach (var item in facet.Items.OrderByDescending(i => i.Count))
+                    {
+                        var isChecked = item.Selected ? "checked" : string.Empty;
+                        var inputName = facet.Name == "Sections" ? "q.Sections" : "q.Types";
+
+                        <label>
+                            <input type="checkbox" name="@inputName" value="@item.Term" @isChecked />
+                            <span>@(item.Display ?? item.Term) (@item.Count)</span>
+                        </label>
+                    }
+                </fieldset>
             }
-        }
-    </div>
+            <button type="submit">Apply filters</button>
+        </div>
+    }
 </div>
 
 @if (Model.Results != null)
@@ -23,7 +48,7 @@
         <div class="span8 grayHead">
             <h2>@Html.Translate("/searchpagetemplate/result")</h2>
             <p>
-                @Html.Translate("/searchpagetemplate/searchfor") <i>@Model.SearchedQuery</i>
+                @Html.Translate("/searchpagetemplate/searchfor") <i>@Model.SearchedQuery?.Q</i>
                 @Html.Translate("/searchpagetemplate/resultedin")
                 @if (Model.NumberOfHits > 0)
                 {
@@ -53,7 +78,33 @@
 
 }
 
+
 @if (Model.SearchServiceDisabled && Html.ViewContext.IsInEditMode())
 {
     @await Html.PartialAsync("TemplateHint", Html.Translate("/searchpagetemplate/disabled").ToString())
+}
+
+        
+@if (Model.TotalPages > 1)
+{
+    <nav class="paging">
+        @for (var p = 1; p <= Model.TotalPages; p++)
+        {
+            // Preserve current filters by resurfacing hidden inputs
+            <form method="get" asp-action="Index" asp-controller="Search" style="display:inline">
+                <input type="hidden" name="q.Q" value="@Model.SearchedQuery.Q" />
+                <input type="hidden" name="q.Page" value="@p" />
+                <input type="hidden" name="q.PageSize" value="@Model.SearchedQuery.PageSize" />
+                @foreach (var s in Model.SearchedQuery.Sections)
+                {
+                    <input type="hidden" name="Sections" value="@s" />
+                }
+                @foreach (var t in Model.SearchedQuery.Types)
+                {
+                    <input type="hidden" name="Types" value="@t" />
+                }
+                <button type="submit" class="@(p == Model.SearchedQuery.Page ? "current" : null)">@p</button>
+            </form>
+        }
+    </nav>
 }
