@@ -22,9 +22,10 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly ISiteDefinitionRepository siteDefinitionRepository;
     private readonly ILanguageBranchRepository languageBranchRepository;
     private readonly IActivityQueryService activityQueryService;
+    private readonly CategoryRepository categoryRepository;
 
     public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
-        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService)
+        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository)
     {
         this.repo = repo;
         this.configuration = configuration;
@@ -32,6 +33,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         this.siteDefinitionRepository = siteDefinitionRepository;
         this.languageBranchRepository = languageBranchRepository;
         this.activityQueryService = activityQueryService;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -488,6 +490,64 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
             TempData["message"] = $"Error querying activities: {ex.Message}";
         }
 
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult CreateCategory(AdminContentPage currentPage, string categoryName)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                TempData["message"] = "Category name is required.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+            var existing = categoryRepository.GetRoot().FindChild(categoryName);
+            if (existing != null)
+            {
+                TempData["message"] = $"Category '{categoryName}' already exists.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+            var category = new Category { Name = categoryName, Parent = categoryRepository.GetRoot() };
+            category.Available = true;
+            category.Selectable = true;
+            category.Description = "created from admin page";
+            categoryRepository.Save(category);
+            TempData["message"] = $"Category '{categoryName}' was created.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error creating category: {ex.Message}";
+        }
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult DeleteCategory(AdminContentPage currentPage, string categoryName)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                TempData["message"] = "Category name is required.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+            var existing = categoryRepository.GetRoot().FindChild(categoryName);
+            if (existing == null)
+            {
+                TempData["message"] = $"Category '{categoryName}' not found.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+            categoryRepository.Delete(existing);
+            TempData["message"] = $"Category '{categoryName}' was deleted.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error deleting category: {ex.Message}";
+        }
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 

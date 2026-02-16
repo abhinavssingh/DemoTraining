@@ -1,0 +1,13 @@
+@{
+    var currentLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference ?? EPiServer.Core.ContentReference.StartPage;
+}
+<form action="@(Url.ContentUrl(currentLink) + "deletecategory")" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="currentPageLink" value="@ViewBag.CurrentPageLink" />
+    <div class="form-group">
+        <label for="categoryName">Category name</label>
+        <input name="categoryName" id="categoryName" class="form-control" placeholder="Enter category name to delete" />
+    </div>
+
+    <input type="submit" value="Delete category" class="btn btn-danger" />
+</form>

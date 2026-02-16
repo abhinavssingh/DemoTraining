@@ -1,0 +1,13 @@
+@{
+    var currentLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference ?? EPiServer.Core.ContentReference.StartPage;
+}
+<form action="@(Url.ContentUrl(currentLink) + "createcategory")" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="currentPageLink" value="@ViewBag.CurrentPageLink" />
+    <div class="form-group">
+        <label for="categoryName">Category name</label>
+        <input name="categoryName" id="categoryName" class="form-control" placeholder="Enter category name" />
+    </div>
+
+    <input type="submit" value="Create category" class="btn btn-primary" />
+</form>

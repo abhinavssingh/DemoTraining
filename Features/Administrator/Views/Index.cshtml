@@ -26,6 +26,8 @@
         <option value="DeleteSiteDefinition">Delete site definition</option>
          <option value="EnableLanguage">Enable language</option>
         <option value="TranslatePage">Translate page</option>
+        <option value="CreateCategory">Create category</option>
+        <option value="DeleteCategory">Delete category</option>
         <option value="ActivityCounts">Activity counts</option>
     </select>
 
@@ -67,6 +69,16 @@
     <div class="op-section" data-op="DeleteSiteDefinition" style="display:none;">
         <h4>Delete site definition</h4>
         @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_DeleteSiteDefinition.cshtml")
+    </div>
+
+    <div class="op-section" data-op="CreateCategory" style="display:none;">
+        <h4>Create category</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_CreateCategory.cshtml")
+    </div>
+
+    <div class="op-section" data-op="DeleteCategory" style="display:none;">
+        <h4>Delete category</h4>
+        @await Html.PartialAsync("~/Features/Administrator/Views/Shared/_AdminForm_DeleteCategory.cshtml")
     </div>
 
     <div class="op-section" data-op="EnableLanguage" style="display:none;">
