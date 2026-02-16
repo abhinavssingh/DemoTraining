@@ -1,0 +1,27 @@
+@{
+    var currentLink = ViewBag.CurrentPageLink as EPiServer.Core.ContentReference ?? EPiServer.Core.ContentReference.StartPage;
+}
+<form action="@(Url.ContentUrl(currentLink) + "setaccesslevel")" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="currentPageLink" value="@ViewBag.CurrentPageLink" />
+    <div class="form-group">
+        <label for="contentReference">Content reference</label>
+        <input name="contentReference" id="contentReference" class="form-control" placeholder="Enter content reference" />
+    </div>
+    <div class="form-group">
+        <label for="roleName">Role name</label>
+        <input name="roleName" id="roleName" class="form-control" placeholder="Enter role name (e.g. Administrators)" />
+    </div>
+    <div class="form-group">
+        <label for="accessLevel">Access level</label>
+        <select name="accessLevel" id="accessLevel" class="form-control">
+            <option value="NoAccess">NoAccess</option>
+            <option value="Read">Read</option>
+            <option value="Create">Create</option>
+            <option value="Edit">Edit</option>
+            <option value="Delete">Delete</option>
+            <option value="Publish">Publish</option>
+        </select>
+    </div>
+    <input type="submit" value="Set access" class="btn btn-primary" />
+</form>

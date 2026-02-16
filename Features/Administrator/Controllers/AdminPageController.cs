@@ -23,9 +23,10 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly ILanguageBranchRepository languageBranchRepository;
     private readonly IActivityQueryService activityQueryService;
     private readonly CategoryRepository categoryRepository;
+    private readonly IContentSecurityRepository contentSecurityRepository;
 
     public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
-        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository)
+        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository, IContentSecurityRepository contentSecurityRepository)
     {
         this.repo = repo;
         this.configuration = configuration;
@@ -34,6 +35,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         this.languageBranchRepository = languageBranchRepository;
         this.activityQueryService = activityQueryService;
         this.categoryRepository = categoryRepository;
+        this.contentSecurityRepository = contentSecurityRepository;
     }
 
 
@@ -547,6 +549,52 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         catch (Exception ex)
         {
             TempData["message"] = $"Error deleting category: {ex.Message}";
+        }
+        return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult SetAccessLevel(AdminContentPage currentPage, ContentReference contentReference, string roleName, string accessLevel)
+    {
+        try
+        {
+            if (contentReference == null || ContentReference.IsNullOrEmpty(contentReference) || string.IsNullOrWhiteSpace(roleName) || string.IsNullOrWhiteSpace(accessLevel))
+            {
+                TempData["message"] = "Content reference, role name and access level are required.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            if (!Enum.TryParse<AccessLevel>(accessLevel, true, out var level))
+            {
+                TempData["message"] = $"Invalid access level '{accessLevel}'.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var content = repo.Get<IContent>(contentReference);
+            if (content == null)
+            {
+                TempData["message"] = "Content not found.";
+                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+            }
+
+            var acl = ((IContentSecurable)content).GetContentSecurityDescriptor().CreateWritableClone() as AccessControlList;
+
+            if (acl.IsInherited)
+            {
+                acl.ToLocal(copyInheritedEntries: true);
+            }
+
+            var newAccess = new AccessControlEntry(roleName, AccessLevel.Read | AccessLevel.Edit | AccessLevel.Publish, SecurityEntityType.Role);
+            acl.Add(newAccess);
+
+            contentSecurityRepository.Save(content.ContentLink, (IContentSecurityDescriptor)acl, securitySaveType: SecuritySaveType.Replace);
+
+            TempData["message"] = $"Access level '{level}' set for role '{roleName}' on content '{content.Name}'.";
+        }
+        catch (Exception ex)
+        {
+            TempData["message"] = $"Error setting access level: {ex.Message}";
         }
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
