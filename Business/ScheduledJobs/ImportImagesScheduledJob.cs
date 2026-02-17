@@ -1,9 +1,11 @@
+using DemoTraining.Extensions;
 using DemoTraining.Models.Media;
 using EPiServer.DataAccess;
 using EPiServer.Framework.Blobs;
 using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
+using Microsoft.Extensions.Options;
 
 namespace DemoTraining.Business.ScheduledJobs;
 
@@ -20,11 +22,11 @@ public class ImportImagesScheduledJob : ScheduledJobBase
 {
     public const string ScheduledJobName = "Import Images";
 
-    private readonly string[] patterns = ["*.png", "*.jpeg", "*.jpg"];
+    private readonly string[] patterns = new[] { "*.png", "*.jpeg", "*.jpg" };
 
     private readonly IContentRepository contentRepository;
     private readonly IBlobFactory blobFactory;
-    private readonly IConfiguration configuration;
+    private readonly IOptions<MediaImportOptions> mediaImportOptions;
 
     private bool _stopSignaled;
 
@@ -36,11 +38,11 @@ public class ImportImagesScheduledJob : ScheduledJobBase
     public ImportImagesScheduledJob(
         IContentRepository contentRepository,
         IBlobFactory blobFactory,
-        IConfiguration configuration) : this()
+        IOptions<MediaImportOptions> mediaImportOptions) : this()
     {
         this.contentRepository = contentRepository;
         this.blobFactory = blobFactory;
-        this.configuration = configuration;
+        this.mediaImportOptions = mediaImportOptions;
     }
 
     public override void Stop()
@@ -64,10 +66,10 @@ public class ImportImagesScheduledJob : ScheduledJobBase
 
     public override string Execute()
     {
-        // Read configuration from appsettings.json (IConfiguration). Keys use ':' as separator.
-        string toImportFolder = configuration?.GetValue<string>("episerver:MediaImport:ToImportFolder");
-        string importedFolder = configuration?.GetValue<string>("episerver:MediaImport:ImportedFolder");
-        var assetsFolderValue = configuration?.GetValue<string>("episerver:MediaImport:ImportAssetsFolder");
+        // Read configuration from bound options
+        string toImportFolder = mediaImportOptions?.Value?.ToImportFolder;
+        string importedFolder = mediaImportOptions?.Value?.ImportedFolder;
+        var assetsFolderValue = mediaImportOptions?.Value?.ImportAssetsFolder;
         var assetsFolder = new ContentReference(assetsFolderValue);
 
         IEnumerable<string> images = GetImageFilenames(toImportFolder);

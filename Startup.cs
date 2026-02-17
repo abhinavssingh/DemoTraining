@@ -12,10 +12,12 @@ namespace DemoTraining
     public class Startup
     {
         private readonly IWebHostEnvironment _webHostingEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public Startup(IWebHostEnvironment webHostingEnvironment)
+        public Startup(IWebHostEnvironment webHostingEnvironment, IConfiguration configuration)
         {
             _webHostingEnvironment = webHostingEnvironment;
+            _configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -53,6 +55,10 @@ namespace DemoTraining
                 options.SiteDefinitionApiEnabled = true;
             });
 
+            // Bind EPiServer configuration sections to strongly-typed options
+            services.Configure<EpiserverOptions>(_configuration.GetSection("EPiServer"));
+            services.Configure<MediaImportOptions>(_configuration.GetSection("EPiServer:MediaImport"));
+
             services.Configure<TinyMceConfiguration>(config =>
             {
                 config.RichtextExtension();
@@ -81,7 +87,16 @@ namespace DemoTraining
             app.UseSession();
 
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    // Disable caching for static files in development
+                    ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                    ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+                    ctx.Context.Response.Headers.Append("Expires", "0");
+                }
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

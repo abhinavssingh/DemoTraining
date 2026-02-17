@@ -1,4 +1,5 @@
 using DemoTraining.Controllers;
+using DemoTraining.Extensions;
 using DemoTraining.Features.Administrator.Models;
 using DemoTraining.Features.Components.Teaser.Models;
 using DemoTraining.Features.Standard.Models;
@@ -10,6 +11,7 @@ using EPiServer.Security;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DemoTraining.Features.Administrator.Controllers;
 
@@ -24,9 +26,12 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IActivityQueryService activityQueryService;
     private readonly CategoryRepository categoryRepository;
     private readonly IContentSecurityRepository contentSecurityRepository;
+    private readonly IOptions<EpiserverOptions> episerverOptions;
+
 
     public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
-        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository, IContentSecurityRepository contentSecurityRepository)
+        ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository,
+        IContentSecurityRepository contentSecurityRepository, IOptions<EpiserverOptions> episerverOptions)
     {
         this.repo = repo;
         this.configuration = configuration;
@@ -36,6 +41,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         this.activityQueryService = activityQueryService;
         this.categoryRepository = categoryRepository;
         this.contentSecurityRepository = contentSecurityRepository;
+        this.episerverOptions = episerverOptions;
     }
 
 
@@ -50,7 +56,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
             // else if you want to create under Site folder, you can get all folders under ContentReference.SiteBlockFolder and find the one you want to use as parent.
             // In this example, we will look for a folder with a specific name defined in configuration, if not found, we will fallback to GlobalBlockFolder.
             var allFolders = GetAllBlockFolders(ContentReference.SiteBlockFolder);
-            var customFolderName = configuration?.GetValue<string>("episerver:CustomBlockFolder");
+            var customFolderName = episerverOptions?.Value?.CustomBlockFolder;
             var targetFolder = allFolders
                 .FirstOrDefault(f => string.Equals(f.Name, customFolderName, StringComparison.OrdinalIgnoreCase)) ?? repo.Get<ContentFolder>(ContentReference.GlobalBlockFolder);
 
