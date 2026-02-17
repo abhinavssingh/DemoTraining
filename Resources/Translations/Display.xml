@@ -22,4 +22,26 @@
       <standard>Standard (1366x768)</standard>
     </resolutions>
   </language>
+	<language name="Deutsch" id="de">
+		<displaychannels>
+			<displaychannel name="mobile">
+				<name>Mobil</name>
+			</displaychannel>
+			<displaychannel name="web">
+				<name>Web</name>
+			</displaychannel>
+		</displaychannels>
+		<displayoptions>
+			<full>Voll</full>
+			<wide>Breit</wide>
+			<half>Halb</half>
+			<narrow>Schmal</narrow>
+		</displayoptions>
+		<resolutions>
+			<androidvertical>Android vertikal (480x800)</androidvertical>
+			<ipadhorizontal>iPad horizontal (1024x768)</ipadhorizontal>
+			<iphonevertical>iPhone vertikal (320x568)</iphonevertical>
+			<standard>Standard (1366x768)</standard>
+		</resolutions>
+	</language>
 </languages>

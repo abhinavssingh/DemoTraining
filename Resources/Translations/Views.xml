@@ -31,4 +31,35 @@
       <zero>no</zero>
     </searchpagetemplate>
   </language>
+	<language name="Deutsch" id="de">
+		<contact>
+			<email>E-Mail</email>
+			<noneselected>Kein Kontakt ausgewählt</noneselected>
+			<phone>Telefon</phone>
+		</contact>
+		<footer>
+			<company>Über uns</company>
+			<support>Support</support>
+			<login>Anmelden</login>
+			<logout>Abmelden</logout>
+			<resources>Ressourcen</resources>
+			<products>Produkte</products>
+		</footer>
+		<mainnavigation>
+			<search>Suche</search>
+		</mainnavigation>
+		<newspagetemplate>
+			<latestnews>Neueste Nachrichten</latestnews>
+			<listrootempty>Die Nachrichtenliste ist leer, da kein Listenknoten festgelegt wurde</listrootempty>
+		</newspagetemplate>
+		<searchpagetemplate>
+			<disabled>EPiServer-Suche ist nicht konfiguriert oder für diese Website nicht aktiviert.</disabled>
+			<hits>Treffer</hits>
+			<result>Suchergebnis</result>
+			<resultedin>ergab</resultedin>
+			<searchbutton>Suchen</searchbutton>
+			<searchfor>Ihre Suche nach</searchfor>
+			<zero>keine</zero>
+		</searchpagetemplate>
+	</language>
 </languages>

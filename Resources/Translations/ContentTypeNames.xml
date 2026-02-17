@@ -84,4 +84,88 @@
       </videofile>
     </contenttypes>
   </language>
+	<language name="Deutsch" id="de">
+		<contenttypes>
+			<articlepage>
+				<description>Verwendet zum Veröffentlichen von Nachrichtenartikeln auf der Website</description>
+				<name>Artikel</name>
+			</articlepage>
+			<buttonblock>
+				<description>Verwendet, um eine Schaltfläche mit einem Link hinzuzufügen</description>
+				<name>Schaltfläche</name>
+			</buttonblock>
+			<contactblock>
+				<description>Verwendet, um Kontaktinformationen hinzuzufügen</description>
+				<name>Kontakt</name>
+			</contactblock>
+			<contactpage>
+				<description>Verwendet zum Veröffentlichen von Kontaktdaten für einen bestimmten Kontakt</description>
+				<name>Kontakt</name>
+			</contactpage>
+			<containerpage>
+				<description>Verwendet, um Seiten im Inhaltsbaum logisch zu gruppieren</description>
+				<name>Container-Seite</name>
+			</containerpage>
+			<editorialblock>
+				<description>Verwendet, um einfachen redaktionellen Inhalt hinzuzufügen</description>
+				<name>Editorial</name>
+			</editorialblock>
+			<genericmedia>
+				<description>Verwendet für Medien, die keinen spezifischen Inhaltstyp haben</description>
+				<name>Allgemeine Datei</name>
+			</genericmedia>
+			<imagefile>
+				<description>Verwendet für Bilddateien (BMP, GIF, ICO, JPEG, PNG)</description>
+				<name>Bild</name>
+			</imagefile>
+			<jumbotronblock>
+				<description>Verwendet, um einen großen Abschnitt hinzuzufügen</description>
+				<name>Jumbotron</name>
+			</jumbotronblock>
+			<landingpage>
+				<description>Verwendet, um eine Seite zu erstellen, die vollständig aus Blöcken besteht</description>
+				<name>Landing Page</name>
+			</landingpage>
+			<newspage>
+				<description>Verwendet als Startseite für einen Nachrichtenbereich einer Website und zeigt normalerweise eine Liste der neuesten Artikel an</description>
+				<name>Nachrichtenseite</name>
+			</newspage>
+			<pagelistblock>
+				<description>Zeigt eine Liste von Seiten an, z. B. um aktuelle Nachrichten anzuzeigen</description>
+				<name>Seitenliste</name>
+			</pagelistblock>
+			<productpage>
+				<description>Verwendet zur Präsentation eines bestimmten Produkts</description>
+				<name>Produkt</name>
+			</productpage>
+			<searchpage>
+				<description>Verwendet, um On-Site-Suchfunktionen bereitzustellen</description>
+				<name>Suchseite</name>
+			</searchpage>
+			<sitelogotypeblock>
+				<description>Verwendet, um das Logotype für die Website festzulegen</description>
+				<name>Logotype</name>
+			</sitelogotypeblock>
+			<standardpage>
+				<description>Hauptsächlich für Standardredaktionelle Inhalte wie Text und Bilder verwendet</description>
+				<name>Standardseite</name>
+			</standardpage>
+			<startpage>
+				<description>Die Startseite der Website</description>
+				<name>Startseite</name>
+			</startpage>
+			<teaserblock>
+				<description>Verwendet, um ein Inhalts-Teaser einzufügen</description>
+				<name>Teaser</name>
+			</teaserblock>
+			<videoblock>
+				<description>Verwendet, um einen Video-Player einzubetten</description>
+				<name>Video-Player</name>
+			</videoblock>
+			<videofile>
+				<description>Verwendet für Videodateien (FLV, MP4, WEBM)</description>
+				<name>Video</name>
+			</videofile>
+		</contenttypes>
+	</language>
 </languages>

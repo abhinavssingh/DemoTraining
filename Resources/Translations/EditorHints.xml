@@ -18,4 +18,22 @@
       <heading>Error while rendering {0} {1}</heading>
     </renderingerror>
   </language>
+	<language name="Deutsch" id="de">
+		<blocks>
+			<buttonblockcontrol>
+				<buttondefaulttext>Schaltflächentext</buttondefaulttext>
+			</buttonblockcontrol>
+			<norenderer>
+				<message>Für diesen Blocktyp ist kein Renderer für diesen Inhaltstyp vorhanden.</message>
+			</norenderer>
+		</blocks>
+		<preview>
+			<heading>Der Block '{0}' wenn angezeigt als {1}</heading>
+			<norenderer>Der Block '{0}' kann nicht als {1} angezeigt werden</norenderer>
+			<norendereratall>Kein Renderer für '{0}' gefunden</norendereratall>
+		</preview>
+		<renderingerror>
+			<heading>Fehler beim Rendern {0} {1}</heading>
+		</renderingerror>
+	</language>
 </languages>

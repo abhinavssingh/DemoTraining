@@ -38,6 +38,9 @@ namespace DemoTraining
 
             [Display(Name = "Specialized", Order = 90)]
             public const string Specialized = "Specialized";
+
+            [Display(Name = "Open Graph", Order = 100)]
+            public const string OpenGraph = "OpenGraph";
         }
 
         /// <summary>

@@ -83,5 +83,69 @@ namespace DemoTraining.Models.Pages
         public virtual bool HideSiteFooter { get; set; }
 
         public string ContentAreaCssClass => "teaserblock";
+
+        [Display(
+    GroupName = Globals.GroupNames.OpenGraph,
+    Order = 300)]
+        [CultureSpecific]
+        public virtual string OpenGraphTitle { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 310)]
+        [CultureSpecific]
+        [UIHint(UIHint.Textarea)]
+        public virtual string OpenGraphDescription { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 320)]
+        [UIHint(UIHint.Image)]
+        public virtual ContentReference OpenGraphImage { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 330)]
+        [CultureSpecific]
+        [UIHint(UIHint.Image)]
+        public virtual Url OpenGraphImageUrl { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 340)]
+        [CultureSpecific]
+        public virtual string OpenGraphType { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 350)]
+        [CultureSpecific]
+        public virtual string OpenGraphSiteName { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 360)]
+        [CultureSpecific]
+        public virtual Url OpenGraphUrl { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 370)]
+        [CultureSpecific]
+        public virtual string OpenGraphLocale { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 380)]
+        [CultureSpecific]
+        [UIHint(UIHint.Video)]
+        public virtual Url OpenGraphVideo { get; set; }
+
+        [Display(
+            GroupName = Globals.GroupNames.OpenGraph,
+            Order = 390)]
+        [CultureSpecific]
+        [BackingType(typeof(PropertyStringList))]
+        public virtual IList<string> OpenGraphLocalAlternates { get; set; }
     }
 }

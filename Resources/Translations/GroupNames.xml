@@ -22,4 +22,26 @@
       </heading>
     </headings>
   </language>
+	<language name="Deutsch" id="de">
+		<headings>
+			<heading name="Default">
+				<description>Standard</description>
+			</heading>
+			<heading name="News">
+				<description>Nachrichten</description>
+			</heading>
+			<heading name="Products">
+				<description>Produkte</description>
+			</heading>
+			<heading name="MetaData">
+				<description>SEO</description>
+			</heading>
+			<heading name="SiteSettings">
+				<description>Website-Einstellungen</description>
+			</heading>
+			<heading name="Specialized">
+				<description>Spezialisiert</description>
+			</heading>
+		</headings>
+	</language>
 </languages>

@@ -61,6 +61,46 @@
             <caption>Teaser text</caption>
             <help>Can be used to display a text other than the description when the page is dropped in a content area</help>
           </teasertext>
+          <opengraphtitle>
+            <caption>Open Graph title</caption>
+            <help>Title used for social sharing (og:title)</help>
+          </opengraphtitle>
+          <opengraphdescription>
+            <caption>Open Graph description</caption>
+            <help>Description used for social sharing (og:description)</help>
+          </opengraphdescription>
+          <opengraphimage>
+            <caption>Open Graph image</caption>
+            <help>Image used for social sharing (og:image)</help>
+          </opengraphimage>
+          <opengraphimageurl>
+            <caption>Open Graph image URL</caption>
+            <help>Direct URL to an image used for social sharing</help>
+          </opengraphimageurl>
+          <opengraphtype>
+            <caption>Open Graph type</caption>
+            <help>Type of the object (eg. website, article)</help>
+          </opengraphtype>
+          <opengraphsitename>
+            <caption>Open Graph site name</caption>
+            <help>Name of the site used in Open Graph tags</help>
+          </opengraphsitename>
+          <opengraphurl>
+            <caption>Open Graph URL</caption>
+            <help>Canonical URL used for social sharing (og:url)</help>
+          </opengraphurl>
+          <opengraphlocale>
+            <caption>Open Graph locale</caption>
+            <help>Locale for the page (eg. en_US) used as og:locale</help>
+          </opengraphlocale>
+          <opengraphvideo>
+            <caption>Open Graph video</caption>
+            <help>Video URL used for social sharing (og:video)</help>
+          </opengraphvideo>
+          <opengraphlocalalternates>
+            <caption>Open Graph local alternates</caption>
+            <help>List of locale alternates for Open Graph (og:locale:alternate)</help>
+          </opengraphlocalalternates>
         </properties>
       </icontentdata>
       <imagefile>
@@ -213,4 +253,116 @@
       </newspage>
     </contenttypes>
   </language>
+	<language name="Deutsch" id="de">
+		<contenttypes>
+			<contactblock>
+				<properties>
+					<contactpagelink>
+						<caption>Kontakt</caption>
+						<help>Wählen Sie aus, wessen Kontaktdaten angezeigt werden sollen</help>
+					</contactpagelink>
+					<heading>
+						<caption>Überschrift</caption>
+					</heading>
+					<image>
+						<caption>Bild</caption>
+					</image>
+					<linktext>
+						<caption>Linktext</caption>
+					</linktext>
+					<linkurl>
+						<caption>Link</caption>
+					</linkurl>
+				</properties>
+			</contactblock>
+			<icontentdata>
+				<properties>
+					<disableindexing>
+						<caption>Indexierung deaktivieren</caption>
+						<help>Verhindert, dass die Seite von Suchmaschinen indexiert wird</help>
+					</disableindexing>
+					<hidesitefooter>
+						<caption>Fußzeile ausblenden</caption>
+						<help>Aktivieren Sie diese Einstellung, um die Fußzeile auszublenden</help>
+					</hidesitefooter>
+					<hidesiteheader>
+						<caption>Header der Seite ausblenden</caption>
+						<help>Aktivieren Sie diese Einstellung, um den Header einschließlich der Hauptnavigation auszublenden</help>
+					</hidesiteheader>
+					<mainbody>
+						<caption>Hauptinhalt</caption>
+						<help>Hauptredaktioneller Inhalt der Seite</help>
+					</mainbody>
+					<maincontentarea>
+						<caption>Großer Inhaltsbereich</caption>
+					</maincontentarea>
+					<metadescription>
+						<caption>Seitenbeschreibung</caption>
+						<help>Wird als Meta-Beschreibung verwendet und häufig als Ingress</help>
+					</metadescription>
+					<metakeywords>
+						<caption>Schlüsselwörter</caption>
+					</metakeywords>
+					<metatitle>
+						<caption>Titel</caption>
+					</metatitle>
+					<pageimage>
+						<caption>Teaser-Bild</caption>
+						<help>Ein Bild, das in verschiedenen Kontexten verwendet wird, z. B. wenn die Seite in einen Inhaltsbereich gezogen wird</help>
+					</pageimage>
+					<teasertext>
+						<caption>Teaser-Text</caption>
+						<help>Kann verwendet werden, um einen anderen Text als die Beschreibung anzuzeigen, wenn die Seite in einen Inhaltsbereich gezogen wird</help>
+					</teasertext>
+					<opengraphtitle>
+						<caption>Open Graph Titel</caption>
+						<help>Titel für soziale Freigaben (og:title)</help>
+					</opengraphtitle>
+					<opengraphdescription>
+						<caption>Open Graph Beschreibung</caption>
+						<help>Beschreibung für soziale Freigaben (og:description)</help>
+					</opengraphdescription>
+					<opengraphimage>
+						<caption>Open Graph Bild</caption>
+						<help>Bild für soziale Freigaben (og:image)</help>
+					</opengraphimage>
+					<opengraphimageurl>
+						<caption>Open Graph Bild-URL</caption>
+						<help>Direkte URL zu einem Bild, das für soziale Freigaben verwendet wird</help>
+					</opengraphimageurl>
+					<opengraphtype>
+						<caption>Open Graph Typ</caption>
+						<help>Typ des Objekts (z. B. website, article)</help>
+					</opengraphtype>
+					<opengraphsitename>
+						<caption>Open Graph Seitenname</caption>
+						<help>Name der Website, der in Open Graph-Tags verwendet wird</help>
+					</opengraphsitename>
+					<opengraphurl>
+						<caption>Open Graph URL</caption>
+						<help>Kanonen-URL, die für soziale Freigaben verwendet wird (og:url)</help>
+					</opengraphurl>
+					<opengraphlocale>
+						<caption>Open Graph Gebietsschema</caption>
+						<help>Gebietsschema der Seite (z. B. en_US) das als og:locale verwendet wird</help>
+					</opengraphlocale>
+					<opengraphvideo>
+						<caption>Open Graph Video</caption>
+						<help>Video-URL, die für soziale Freigaben verwendet wird (og:video)</help>
+					</opengraphvideo>
+					<opengraphlocalalternates>
+						<caption>Open Graph lokale Alternativen</caption>
+						<help>Liste von alternativen Gebietsschemas für Open Graph (og:locale:alternate)</help>
+					</opengraphlocalalternates>
+				</properties>
+			</icontentdata>
+			<imagefile>
+				<properties>
+					<copyright>
+						<caption>Urheberrecht</caption>
+					</copyright>
+				</properties>
+			</imagefile>
+		</contenttypes>
+	</language>
 </languages>
