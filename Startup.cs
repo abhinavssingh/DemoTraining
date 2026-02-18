@@ -2,6 +2,7 @@ using DemoTraining.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.TinyMce.Core;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.DependencyInjection;
 using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
@@ -58,13 +59,14 @@ namespace DemoTraining
             // Bind EPiServer configuration sections to strongly-typed options
             services.Configure<EpiserverOptions>(_configuration.GetSection("EPiServer"));
             services.Configure<MediaImportOptions>(_configuration.GetSection("EPiServer:MediaImport"));
+            services.AddContentGraph();
 
             services.Configure<TinyMceConfiguration>(config =>
             {
                 config.RichtextExtension();
 
-                // firstlu comment out the above line and then uncooments and customize the configuration for all properties of type XhtmlString like this:
-                // uncooments and customize the configuration for a specific property on a specific content type like this:
+                // firstly comment out the above line and then uncomments and customize the configuration for all properties of type XhtmlString like this:
+                // uncomments and customize the configuration for a specific property on a specific content type like this:
                 //var customConfigForStandardPage = config
                 //.Default() // Start with default settings or another named configuration
                 //.AddPlugin("table") // Add specific plugins (e.g., source code view)
