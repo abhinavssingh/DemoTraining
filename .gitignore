@@ -22,3 +22,6 @@ thumbs.db
 ehthumbs.db
 desktop.ini
 /appsettings.Development.json
+
+.env*
+!.env.template
