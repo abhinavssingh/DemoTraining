@@ -15,12 +15,12 @@
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="12.34.2" />
     <PackageReference Include="EPiServer.CMS.AspNetCore.TagHelpers" Version="12.23.1" />
-    <PackageReference Include="EPiServer.ContentDeliveryApi.Cms" Version="3.12.5" />
     <PackageReference Include="EPiServer.Find.Cms" Version="16.7.0" />
     <PackageReference Include="EPiServer.Forms" Version="5.10.6" />
     <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
+    <PackageReference Include="EPiServer.OpenIDConnect" Version="3.12.6" />
+    <PackageReference Include="EPiServer.OpenIDConnect.UI" Version="3.12.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
-    <PackageReference Include="Optimizely.ContentGraph.Cms" Version="4.3.1" />
     <PackageReference Include="Wangkanai.Detection" Version="8.20.0" />
   </ItemGroup>
   

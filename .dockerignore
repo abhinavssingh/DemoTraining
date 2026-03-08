@@ -1,0 +1,16 @@
+bin/
+obj/
+.vs/
+.git/
+.gitignore
+.vscode/
+**/*.user
+**/*.suo
+**/*.swp
+**/*.pdb
+**/*.log
+node_modules/
+dist/
+artifacts/
+App_Data/*.mdf
+App_Data/*.ldf

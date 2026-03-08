@@ -2,7 +2,6 @@ using DemoTraining.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.TinyMce.Core;
 using EPiServer.Cms.UI.AspNetIdentity;
-using EPiServer.DependencyInjection;
 using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
@@ -51,15 +50,9 @@ namespace DemoTraining
                 options.Cookie.IsEssential = true;
             });
 
-            services.AddContentDeliveryApi(options =>
-            {
-                options.SiteDefinitionApiEnabled = true;
-            });
-
             // Bind EPiServer configuration sections to strongly-typed options
             services.Configure<EpiserverOptions>(_configuration.GetSection("EPiServer"));
             services.Configure<MediaImportOptions>(_configuration.GetSection("EPiServer:MediaImport"));
-            services.AddContentGraph();
 
             services.Configure<TinyMceConfiguration>(config =>
             {
