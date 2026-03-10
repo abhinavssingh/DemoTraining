@@ -22,7 +22,7 @@ public class ImportImagesScheduledJob : ScheduledJobBase
 {
     public const string ScheduledJobName = "Import Images";
 
-    private readonly string[] patterns = new[] { "*.png", "*.jpeg", "*.jpg" };
+    private readonly string[] patterns = new[] { "*.png", "*.jpeg", "*.jpg", "*.webp" };
 
     private readonly IContentRepository contentRepository;
     private readonly IBlobFactory blobFactory;

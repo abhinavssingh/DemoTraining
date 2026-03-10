@@ -54,6 +54,20 @@ namespace DemoTraining
             services.Configure<EpiserverOptions>(_configuration.GetSection("EPiServer"));
             services.Configure<MediaImportOptions>(_configuration.GetSection("EPiServer:MediaImport"));
 
+            // Ensure media import paths are absolute so they work cross-platform and in Docker
+            services.PostConfigure<MediaImportOptions>(options =>
+            {
+                if (!string.IsNullOrEmpty(options.ToImportFolder) && !Path.IsPathRooted(options.ToImportFolder))
+                {
+                    options.ToImportFolder = Path.Combine(_webHostingEnvironment.ContentRootPath, options.ToImportFolder.Replace('/', Path.DirectorySeparatorChar));
+                }
+
+                if (!string.IsNullOrEmpty(options.ImportedFolder) && !Path.IsPathRooted(options.ImportedFolder))
+                {
+                    options.ImportedFolder = Path.Combine(_webHostingEnvironment.ContentRootPath, options.ImportedFolder.Replace('/', Path.DirectorySeparatorChar));
+                }
+            });
+
             services.Configure<TinyMceConfiguration>(config =>
             {
                 config.RichtextExtension();
