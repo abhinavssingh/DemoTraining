@@ -37,6 +37,7 @@ dotnet new --list epi # to view the installed templates
   - `Extensions`: This folder contains the Initialization logic for the application, which is executed when the application starts. It is used to configure services, middleware, and other components of the application, e.g. `AddDemoTraining` is registered in ConfigureServices method of the application.
   - `Features`: This folder contains the feature-specific logic of the application, which is organized into subfolders based on the features of the application. Each feature folder contains its own controllers, views, and models that are specific to that feature.
   - `Resources`: This folder contains the resource files for localization, which are used to localize the CMS interface in targeted language. This folder conatains many `xml` files, each file has `languages` and `language` node. If we have enabled any language in CMS, then we must need to add new `language` node in the `languages` node of the resource file, otherwise that language will not work in CMS interface. 
+  - `docker`: This contains docker files and scripts for sql and web deployment. `SetupDatabases.sh` is used to deploy bacpac file. `wait_sqlserver_start_and_attachdb.sh` is used to check database availablity. 
 
 ## Dotnet commands to create Content Types, Controllers, Components and Jobs
 
@@ -117,6 +118,11 @@ $ docker-compose up
 2. Run `docker compose down --rmi all` to remove containers, networks, and images associated with the specific project instance
 3. In the future, run `docker compose up` anytime you want to recreate the images and containers
 
+### Troubleshooting Steps
+1. Run `docker compose down -v` to remove all the containers along with volumes.
+2. Run `docker system prune -a` to clean docker cache and images
+3. Run `docker compose build --no-cache sql` to build the sql image individual without caching
+4. Run `docker compose build --no-cache web` to build the web image individual without caching
 ### Any OS with external database server
 
 Prerequisities

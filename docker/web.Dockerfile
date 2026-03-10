@@ -15,6 +15,7 @@ COPY . .
 
 # Publish
 RUN dotnet publish DemoTraining.csproj -c Release -o /app/publish
+COPY ./docker/build-script/wait_sqlserver_start_and_attachdb.sh /app/publish/wait_sqlserver_start_and_attachdb.sh
 
 # ---- Runtime image ----
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -25,4 +26,4 @@ COPY --from=build /app/publish/ .
 EXPOSE 80
 
 # Default entrypoint; adjust DLL name if your AssemblyName differs
-ENTRYPOINT ["dotnet", "DemoTraining.dll"]
+ENTRYPOINT ["./wait_sqlserver_start_and_attachdb.sh"]

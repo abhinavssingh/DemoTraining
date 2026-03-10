@@ -16,4 +16,4 @@ for i in {1..60}; do
 done
 
 echo "Starting site..."
-exec dotnet DemoTraining.Web.dll
+exec dotnet DemoTraining.dll

@@ -39,7 +39,6 @@ namespace DemoTraining
                 .AddAdminUserRegistration()
                 .AddEmbeddedLocalization<Startup>();
 
-
             // Required by Wangkanai.Detection
             services.AddDetection();
 

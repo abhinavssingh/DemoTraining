@@ -24,15 +24,22 @@ services:
     build:
       context: .
       dockerfile: ./docker/web.Dockerfile
-    container_name: demotraining-web
-    ports:
-      - "${SITE_PORT}:80"
+    container_name: demotraining-web    
+    volumes:
+      - ./App_Data/ToImport:/app/App_Data/ToImport
+      - ./App_Data/Imported:/app/App_Data/Imported
+      - ./App_Data/blobs:/app/App_Data/blobs
+      - ./dpkeys:/app/dpkeys
     environment:
       # Optimizely/EPiServer default connection string name (often EPiServerDB)
-      ConnectionStrings__EPiServerDB: "Server=sql,1433;Database=${DATABASE_NAME};User ID=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
-      Find__ServiceUrl: ${Find_ServiceUrl}   # use your region's endpoint
-      Find__DefaultIndex: ${Find_DefaultIndex}
-      ASPNETCORE_URLS: "http://+:80"
+      ConnectionStrings__EPiServerDB: "Server=sql,1433;Database=${DATABASE_NAME};User ID=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
+      EPiServer__Find__ServiceUrl: "${EPiServer_Find_ServiceUrl}"   # use your region's endpoint
+      EPiServer__Find__DefaultIndex: "${EPiServer_Find_DefaultIndex}"
+      EPiServer__MediaImport__ImportAssetsFolder: "${EPiServer_MediaImport_ImportAssetsFolder}"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: http://*:8080
+    ports:
+      - "5015:8080"
     depends_on:
       sql:
         condition: service_healthy

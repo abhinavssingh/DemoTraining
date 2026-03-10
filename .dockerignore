@@ -14,3 +14,4 @@ dist/
 artifacts/
 App_Data/*.mdf
 App_Data/*.ldf
+appsettings.Development.json
