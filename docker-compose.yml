@@ -32,14 +32,14 @@ services:
       - ./dpkeys:/app/dpkeys
     environment:
       # Optimizely/EPiServer default connection string name (often EPiServerDB)
-      ConnectionStrings__EPiServerDB: "Server=sql,1433;Database=${DATABASE_NAME};User ID=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
+      ConnectionStrings__EPiServerDB: "Data Source=demotraining-sql;Database=${DATABASE_NAME};User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
       EPiServer__Find__ServiceUrl: "${EPiServer_Find_ServiceUrl}"   # use your region's endpoint
       EPiServer__Find__DefaultIndex: "${EPiServer_Find_DefaultIndex}"
       EPiServer__MediaImport__ImportAssetsFolder: "${EPiServer_MediaImport_ImportAssetsFolder}"
       ASPNETCORE_ENVIRONMENT: "Development"
-      ASPNETCORE_URLS: http://*:8080
+      ASPNETCORE_URLS: http://*:${SITE_PORT}
     ports:
-      - "5015:8080"
+      - "${SITE_PORT}:${SITE_PORT}"
     depends_on:
       sql:
         condition: service_healthy
