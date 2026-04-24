@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -34,5 +34,9 @@
     <Folder Include="Features\Landing\Models\" />
     <Folder Include="Features\StartPage\Models\" />
     <Folder Include="Components\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include=".github\upgrades\cms-12-to-13-upgrade\CRITICAL-DECISION-CMS13-REQUIRES-NET10.md" />
   </ItemGroup>
 </Project>

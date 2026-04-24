@@ -1,0 +1,86 @@
+name: modernize-optimizely-cms12-to-cms13
+displayName: Comprehensive Optimizely CMS 12 → CMS 13 Upgrade
+description: >
+  Performs a deep, safe, and auditable modernization of an
+  Optimizely CMS 12 solution to CMS 13, scoped for .NET 8
+  and classic Startup-based hosting.
+
+appliesTo:
+  languages: [csharp]
+  frameworks: [aspnetcore]
+  runtime: dotnet8
+  cms: optimizely
+
+sourceGuidance:
+  - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13
+  - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13
+
+guardrails:
+  - Do not refactor domain or business logic
+  - Prefer TODO comments over assumptions
+  - Explain all CMS 13 breaking changes inline
+  - No stylistic or formatting-only changes
+  - No framework upgrades outside CMS scope
+
+tasks:
+
+  # Phase A — Analysis
+  - analyze-repository-structure
+  - analyze-optimizely-footprint
+  - analyze-dotnet-hosting-model
+  - analyze-deprecated-apis
+  - analyze-third-party-packages
+
+  # Phase B — Validation
+  - validate-framework-version
+  - validate-sdk-and-tools
+  - validate-database-compatibility
+  - validate-environment-assumptions
+
+  # Phase C — Dependencies
+  - inventory-nuget-packages
+  - upgrade-optimizely-core-packages
+  - align-optimizely-package-versions
+  - remove-deprecated-optimizely-packages
+  - validate-third-party-dependencies
+
+  # Phase D — Hosting
+  - analyze-program-cs
+  - update-program-cs-for-cms13
+  - analyze-startup-cs
+  - update-startup-services
+  - update-startup-middleware
+
+  # Phase E — Initialization
+  - identify-initialization-modules
+  - update-initializablemodule-usage
+  - update-service-locator-patterns
+  - update-dependency-injection-registrations
+
+  # Phase F — Content APIs
+  - analyze-content-types
+  - update-content-type-attributes
+  - update-content-repository-usage
+  - update-url-and-routing-apis
+
+  # Phase G — Controllers & Features
+  - upgrade-controllers
+  - upgrade-view-components
+  - upgrade-features-and-blocks
+  - validate-rendering-logic
+
+  # Phase H — Configuration
+  - analyze-appsettings
+  - update-appsettings-for-cms13
+  - validate-environment-specific-settings
+  - document-manual-configuration-steps
+
+  # Phase I — Build Validation
+  - detect-compilation-errors
+  - apply-minimal-fixes-for-compilation
+  - flag-manual-runtime-verification-points
+
+  # Phase J — Documentation
+  - generate-upgrade-summary
+  - generate-breaking-changes-checklist
+  - generate-post-upgrade-validation-guide
