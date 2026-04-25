@@ -30,6 +30,13 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Compile Remove="backups\**" />
+    <Content Remove="backups\**" />
+    <EmbeddedResource Remove="backups\**" />
+    <None Remove="backups\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Folder Include="Business\ScheduledJobs\" />
     <Folder Include="Features\Administrator\Models\" />
     <Folder Include="Features\Administrator\Controllers\" />
