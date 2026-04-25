@@ -1,10 +1,8 @@
 using DemoTraining.Extensions;
-using EPiServer.Cms.Shell;
 using EPiServer.Cms.TinyMce.Core;
 // TODO CMS13: AspNetIdentity support in EPiServer.Cms.UI has been refactored. CMS 13 handles Identity registration.
 using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
-using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 
 namespace DemoTraining
@@ -44,10 +42,6 @@ namespace DemoTraining
                 // TODO CMS13: AddEmbeddedLocalization may have been moved or renamed in CMS 13
                 // .AddEmbeddedLocalization<Startup>()
                 ;
-
-
-            // Required by Wangkanai.Detection
-            services.AddDetection();
 
             services.AddSession(options =>
             {
@@ -97,8 +91,6 @@ namespace DemoTraining
                 app.UseDeveloperExceptionPage();
             }
 
-            // Required by Wangkanai.Detection
-            app.UseDetection();
             app.UseSession();
 
 

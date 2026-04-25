@@ -18,19 +18,11 @@
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="13.0.2" />
     <PackageReference Include="EPiServer.CMS.AspNetCore.TagHelpers" Version="13.0.2" />
-    <!-- STAGE 2 CMS13: EPiServer.Find packages removed - migrated to Optimizely Graph -->
-    <!-- <PackageReference Include="EPiServer.Find.Cms" Version="16.7.1" /> -->
     <PackageReference Include="EPiServer.Forms" Version="6.0.0" />
     <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
-    <!-- STAGE 2 CMS13: Optimizely Graph SDK packages for search migration
-         TODO: Update package versions when official Graph SDK is released
-         Expected packages: Optimizely.Graph.Cms.Query, Optimizely.Graph.AspNetCore
-         For now, using placeholder comments to mark where Graph packages should go
-    -->
-    <!-- <PackageReference Include="Optimizely.Graph.Cms.Query" Version="[latest-graph-version]" /> -->
-    <!-- <PackageReference Include="Optimizely.Graph.AspNetCore" Version="[latest-graph-version]" /> -->
+    <PackageReference Include="Optimizely.Graph.Cms.Query" Version="13.0.2" /> 
+    <PackageReference Include="Optimizely.Graph.AspNetCore" Version="13.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
-    <PackageReference Include="Wangkanai.Detection" Version="8.20.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -49,7 +41,10 @@
   
   <ItemGroup>
     <None Include=".github\upgrades\cms-12-to-13-upgrade\BREAKING-CHANGES-CHECKLIST.md" />
+    <None Include=".github\upgrades\cms-12-to-13-upgrade\CMS13-GRAPH-MIGRATION-SUMMARY.md" />
     <None Include=".github\upgrades\cms-12-to-13-upgrade\CRITICAL-DECISION-CMS13-REQUIRES-NET10.md" />
+    <None Include=".github\upgrades\cms-12-to-13-upgrade\FINAL-MIGRATION-REPORT.md" />
+    <None Include=".github\upgrades\cms-12-to-13-upgrade\GRAPH-SDK-SETUP-GUIDE.md" />
     <None Include=".github\upgrades\cms-12-to-13-upgrade\PHASE-2-SEARCH-ASSESSMENT.md" />
     <None Include=".github\upgrades\cms-12-to-13-upgrade\phase-c-net10-upgrade-completion.md" />
   </ItemGroup>

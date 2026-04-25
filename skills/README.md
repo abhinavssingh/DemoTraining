@@ -118,10 +118,10 @@ using the orchestrated CMS + Graph skill.
 ```
 CMS Upgrade Only
 ```text
-@modernize run cms-platform-upgrade stage onlyShow more lines
+@modernize run cms-platform-upgrade stage only
 ```
 
 Resume at Search Migration
 ```text
-@modernize resume orchestrated upgrade from search-migration stageShow more lines
+@modernize resume orchestrated upgrade from search-migration stage
 ```

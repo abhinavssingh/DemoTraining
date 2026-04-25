@@ -26,10 +26,6 @@
 	  "ImportAssetsFolder": "~/App_Data/MediaAssets"
 	},
 	"CustomBlockFolder": "CustomBlocks",
-	"Find": {
-	  "DefaultIndex": "episerver-site",
-	  "ServiceUrl": "https://find.episerver.com"
-	},
 	"Graph": {
 	  "Enabled": true,
 	  "Gateway": "https://cg.optimizely.com/graphql",
