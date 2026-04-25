@@ -31,7 +31,8 @@ public class PropertyTypesDemoPage : SitePageData
     [Display(Name = "Multi-line text", Order = 50, GroupName = PropertyTypesDemoPageTabs.Text)]
     public virtual string MultilineText { get; set; }
 
-    [RegularExpression(EPiServer.Framework.Validator.DefaultEmailRegexString, ErrorMessage = "{0} Must be a valid email address.")]
+    // TODO CMS13: EPiServer.Framework.Validator is obsolete. Using standard .NET email regex.
+    [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "{0} Must be a valid email address.")]
     [Display(Name = "Email address", Order = 60, GroupName = PropertyTypesDemoPageTabs.Text)]
     public virtual string EmailAddress { get; set; }
 

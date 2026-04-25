@@ -1,7 +1,7 @@
 using DemoTraining.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.TinyMce.Core;
-using EPiServer.Cms.UI.AspNetIdentity;
+// TODO CMS13: AspNetIdentity support in EPiServer.Cms.UI has been refactored. CMS 13 handles Identity registration.
 using EPiServer.Labs.GridView;
 using EPiServer.Scheduler;
 using EPiServer.ServiceLocation;
@@ -29,15 +29,22 @@ namespace DemoTraining
                 services.Configure<SchedulerOptions>(options => options.Enabled = false);
             }
 
+            // TODO CMS13: CMS 13 core and Identity registration moved to Program.cs via ConfigureCmsDefaults()
+            // Startup.cs now handles only app-specific service extensions
             services
-                .AddCmsAspNetIdentity<ApplicationUser>()
-                .AddCms()
-                .AddFind()
-                .AddCmsTagHelpers()
+                // TODO CMS13: AddCmsTagHelpers may have been moved or renamed in CMS 13. 
+                // Tag helpers should be registered via the view configuration or automatically discovered.
+                // .AddCmsTagHelpers()
                 .AddDemoTraining()
                 .AddGridView(options => options.IsViewEnabled = true)
-                .AddAdminUserRegistration()
-                .AddEmbeddedLocalization<Startup>();
+                // STAGE 2 CMS13: Register Optimizely Graph for search functionality
+                .AddOptimizelyGraph(_configuration)
+                // TODO CMS13: AddAdminUserRegistration is not available in CMS 13 - admin registration may be automatic
+                // .AddAdminUserRegistration()
+                // TODO CMS13: AddEmbeddedLocalization may have been moved or renamed in CMS 13
+                // .AddEmbeddedLocalization<Startup>()
+                ;
+
 
             // Required by Wangkanai.Detection
             services.AddDetection();

@@ -1,4 +1,5 @@
 ﻿using EPiServer.ServiceLocation;
+using EPiServer.DataAbstraction;
 
 namespace DemoTraining.Business
 {
@@ -14,9 +15,10 @@ namespace DemoTraining.Business
         /// <returns></returns>
         public static PageType GetPageType(this Type pageType)
         {
-            var pageTypeRepository = ServiceLocator.Current.GetInstance<IContentTypeRepository<PageType>>();
+            // TODO CMS13: IContentTypeRepository generic syntax removed in CMS 13
+            var pageTypeRepository = ServiceLocator.Current.GetInstance<IContentTypeRepository>();
 
-            return pageTypeRepository.Load(pageType);
+            return (PageType)pageTypeRepository.Load(pageType);
         }
     }
 }

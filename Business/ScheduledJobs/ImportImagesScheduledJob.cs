@@ -16,7 +16,7 @@ namespace DemoTraining.Business.ScheduledJobs;
     IntervalType = ScheduledIntervalType.Hours,
     IntervalLength = 12,
     DefaultEnabled = true,
-    SortIndex = -1,
+    // TODO CMS13: SortIndex property removed from ScheduledPlugIn attribute in CMS 13
     Restartable = true)]
 public class ImportImagesScheduledJob : ScheduledJobBase
 {

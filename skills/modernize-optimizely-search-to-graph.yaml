@@ -1,0 +1,98 @@
+name: modernize-optimizely-search-to-graph
+displayName: Upgrade Optimizely CMS 12 to CMS 13 with Graph Search
+description: >
+  Upgrades an Optimizely CMS 12 solution to CMS 13 and performs
+  mandatory migration from Optimizely Search & Navigation
+  (EPiServer.Find) to Optimizely Graph.
+
+sourceGuidance:
+  - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13
+
+guardrails:
+  - Do not disable features unless migration is impossible
+  - Search must be migrated, not commented out
+  - Preserve query intent and ordering
+  - Use async Graph APIs
+  - Add TODOs only for manual validation, not missing implementations
+
+tasks:
+
+  # ------------------------------------------------------------------
+  # Phase 1 – CMS Platform Upgrade
+  # ------------------------------------------------------------------
+  - id: upgrade-cms
+    description: Upgrade CMS packages to version 13
+    instructions: >
+      Upgrade all EPiServer/Optimizely CMS packages to version 13.
+      Keep EPiServer.Find packages temporarily.
+      Ensure the site builds before search migration.
+
+  # ------------------------------------------------------------------
+  # Phase 2 – Search Assessment
+  # ------------------------------------------------------------------
+  - id: analyze-search
+    description: Locate legacy Search & Navigation usage
+    instructions: >
+      Scan the solution for EPiServer.Find usage including:
+      SearchClient, IClient, For(), Filter(), FilterForVisitor(),
+      Take(), GetContentResult().
+      Document each usage for rewrite.
+
+  # ------------------------------------------------------------------
+  # Phase 3 – Replace Packages
+  # ------------------------------------------------------------------
+  - id: replace-search-packages
+    description: Replace Find packages with Graph SDK
+    instructions: >
+      Remove EPiServer.Find and EPiServer.Find.Cms.
+      Add:
+        - Optimizely.Graph.Cms.Query
+        - Optimizely.Graph.AspNetCore
+      Restore and build.
+
+  # ------------------------------------------------------------------
+  # Phase 4 – Rewrite Search Code
+  # ------------------------------------------------------------------
+  - id: migrate-search-code
+    description: Rewrite Find queries using Graph C# SDK
+    instructions: >
+      Replace legacy Find queries with Graph equivalents:
+      - Search<T>() → QueryContent<T>()
+      - For() → SearchFor()
+      - FilterForVisitor() → WithDisplayFilters()
+      - Take() → Limit()
+      - GetContentResult() → GetAsContentAsync()
+      Preserve sorting, paging, and filtering behavior.
+      Convert calls to async/await.
+
+  # ------------------------------------------------------------------
+  # Phase 5 – Configure Graph
+  # ------------------------------------------------------------------
+  - id: configure-graph
+    description: Configure Optimizely Graph
+    instructions: >
+      Replace EPiServer:Find config with Optimizely:Graph
+      in appsettings.json.
+      Add placeholders for gateway, app key, and secret.
+      Do not hardcode secrets.
+
+  # ------------------------------------------------------------------
+  # Phase 6 – Cleanup
+  # ------------------------------------------------------------------
+  - id: cleanup-search
+    description: Remove legacy Find artifacts
+    instructions: >
+      Remove unused Find namespaces, helpers, and configuration.
+      Ensure no EPiServer.Find references remain.
+
+  # ------------------------------------------------------------------
+  # Phase 7 – Summary
+  # ------------------------------------------------------------------
+  - id: summary
+    description: Generate upgrade summary
+    instructions: >
+      Create CMS13-Graph-Upgrade.md documenting:
+      - CMS upgrade
+      - Search migration
+      - Async changes
+      - Manual Graph verification steps

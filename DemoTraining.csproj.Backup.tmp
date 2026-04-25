@@ -18,17 +18,13 @@
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="13.0.2" />
     <PackageReference Include="EPiServer.CMS.AspNetCore.TagHelpers" Version="13.0.2" />
-    <!-- STAGE 2 CMS13: EPiServer.Find packages removed - migrated to Optimizely Graph -->
+    <!-- TODO CMS13: EPiServer.Find.Cms 16.7.x still requires CMS 12.x. Awaiting Find CMS 13 support. 
+         Temporarily removed to unblock CMS 13 core migration. Reinstall after Find updates released. -->
     <!-- <PackageReference Include="EPiServer.Find.Cms" Version="16.7.1" /> -->
     <PackageReference Include="EPiServer.Forms" Version="6.0.0" />
     <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
-    <!-- STAGE 2 CMS13: Optimizely Graph SDK packages for search migration
-         TODO: Update package versions when official Graph SDK is released
-         Expected packages: Optimizely.Graph.Cms.Query, Optimizely.Graph.AspNetCore
-         For now, using placeholder comments to mark where Graph packages should go
-    -->
-    <!-- <PackageReference Include="Optimizely.Graph.Cms.Query" Version="[latest-graph-version]" /> -->
-    <!-- <PackageReference Include="Optimizely.Graph.AspNetCore" Version="[latest-graph-version]" /> -->
+    <!-- STAGE 2 CMS13: TODO - Install Optimizely Graph SDK for search migration 
+         Once available, add: <PackageReference Include="Optimizely.Graph.Sdk" Version="[latest]" /> -->
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
     <PackageReference Include="Wangkanai.Detection" Version="8.20.0" />
   </ItemGroup>

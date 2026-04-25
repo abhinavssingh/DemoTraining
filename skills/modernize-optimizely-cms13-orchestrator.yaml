@@ -1,0 +1,101 @@
+name: modernize-optimizely-cms13-orchestrator
+displayName: Optimizely CMS 12 → CMS 13 Orchestrated Upgrade (CMS + Graph)
+description: >
+  Orchestrates a full modernization of an Optimizely CMS 12 solution
+  by enforcing the correct execution order across multiple skills:
+  solution/platform upgrade, CMS 13 upgrade, and mandatory migration
+  from Optimizely Search & Navigation (EPiServer.Find) to Optimizely Graph.
+
+appliesTo:
+  languages: [csharp]
+  frameworks: [aspnetcore]
+  cms: optimizely
+
+sourceGuidance:
+  - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13
+  - https://docs.developers.optimizely.com/content
+
+guardrails:
+  - This skill must not perform direct code refactoring
+  - CMS upgrade must complete before search migration
+  - Graph migration is mandatory for CMS 13
+  - Stop orchestration if any stage fails
+  - Each stage must produce its required outcomes
+
+stages:
+
+  # =========================================================
+  # Stage 1 — CMS 13 Upgrade
+  # =========================================================
+  - stage: cms-upgrade
+    skill: modernize-optimizely-cms12-to-cms13
+    description: >
+      Upgrade the solution platform and Optimizely CMS
+      from version 12 to version 13, including runtime,
+      dependencies, configuration, and required code changes.
+
+    preconditions:
+      - Repository builds successfully on CMS 12
+      - No uncommitted local changes
+
+    requiredOutcome:
+      - Solution targets a CMS 13–compatible .NET runtime
+      - All Optimizely CMS packages are version 13
+      - Solution builds without CMS-related errors
+      - CMS13-Upgrade.md generated
+
+    onFailure:
+      action: stop
+      message: >
+        CMS 13 upgrade failed.
+        Search migration must not start until CMS upgrade is complete.
+
+  # =========================================================
+  # Stage 2 — Search & Navigation → Graph Migration
+  # =========================================================
+  - stage: search-migration
+    skill: modernize-optimizely-search-to-graph
+    description: >
+      Migrate all Optimizely Search & Navigation (EPiServer.Find)
+      usages to Optimizely Graph using the C# Graph SDK.
+
+    preconditions:
+      - CMS 13 upgrade completed
+      - No blocking CMS build errors
+      - CMS13-Upgrade.md exists
+
+    requiredOutcome:
+      - No EPiServer.Find or EPiServer.Find.Cms references remain
+      - Search uses async Optimizely Graph APIs
+      - Search behavior (filtering, paging, sorting) preserved
+      - Graph-Migration.md generated
+
+    onFailure:
+      action: stop
+      message: >
+        Search migration failed.
+        CMS 13 upgrade is incomplete without Graph migration.
+
+  # =========================================================
+  # Stage 3 — Final Verification & Reporting
+  # =========================================================
+  - stage: final-verification
+    description: >
+      Perform final verification and generate a consolidated
+      migration report for auditing and release readiness.
+
+    preconditions:
+      - CMS 13 upgrade completed
+      - Graph migration completed
+
+    requiredOutcome:
+      - No CMS 12 packages remain
+      - No EPiServer.Find references remain
+      - Final-Migration-Report.md generated
+      - Manual verification steps documented
+
+    onFailure:
+      action: stop
+      message: >
+        Final verification failed.
+        Resolve outstanding issues before release.

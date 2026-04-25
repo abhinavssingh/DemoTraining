@@ -35,7 +35,8 @@ namespace DemoTraining.Controllers
 
         public virtual void ModifyLayout(LayoutModel layoutModel)
         {
-            if (PageContext.Page is SitePageData page)
+            // TODO CMS13: PageContext.Page property changed - now use CurrentContent via content link
+            if (HttpContext.RequestServices.GetService<EPiServer.Web.Routing.IContentRouteHelper>()?.Content is SitePageData page)
             {
                 layoutModel.HideHeader = page.HideSiteHeader;
                 layoutModel.HideFooter = page.HideSiteFooter;

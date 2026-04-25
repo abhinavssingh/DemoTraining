@@ -1,11 +1,12 @@
 ﻿using DemoTraining.Features.PageValidation.Models;
+using EPiServer.DataAnnotations;
 using EPiServer.Framework.Serialization;
-using EPiServer.PlugIn;
 using EPiServer.ServiceLocation;
 
 namespace DemoTraining.Features.PageValidation.Business
 {
-    [PropertyDefinitionTypePlugIn(DisplayName = "List of people i.e. IList<Person>",
+    // TODO CMS13: PropertyDefinitionTypePlugInAttribute is obsolete, use PropertyDefinitionTypeAttribute instead
+    [PropertyDefinitionType(DisplayName = "List of people i.e. IList<Person>",
        Description = "An editable list of Person instances.")]
     public class PropertyPersonList : PropertyList<Person>
     {

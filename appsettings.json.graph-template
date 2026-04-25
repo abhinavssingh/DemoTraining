@@ -1,0 +1,43 @@
+{
+  "Logging": {
+	"LogLevel": {
+	  "Default": "Information",
+	  "Microsoft": "Warning",
+	  "Microsoft.Hosting.Lifetime": "Information"
+	}
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+	"EPiServerDB": "Server=(local)\\SQLExpress;Database=DemoTraining;Integrated Security=true;"
+  },
+  "EPiServer": {
+	"Cms": {
+	  "MappedRoles": {
+		"Items": {
+		  "Administrators": {
+			"MappedRoles": [ "WebAdmins", "WebEditors" ]
+		  }
+		}
+	  }
+	},
+	"MediaImport": {
+	  "ToImportFolder": "~/App_Data/MediaImport",
+	  "ImportedFolder": "~/App_Data/MediaImported",
+	  "ImportAssetsFolder": "~/App_Data/MediaAssets"
+	},
+	"CustomBlockFolder": "CustomBlocks",
+	"Find": {
+	  "DefaultIndex": "episerver-site",
+	  "ServiceUrl": "https://find.episerver.com"
+	},
+	"Graph": {
+	  "Enabled": true,
+	  "Gateway": "https://cg.optimizely.com/graphql",
+	  "AppKey": "YOUR_GRAPH_APP_KEY",
+	  "Secret": "YOUR_GRAPH_SECRET",
+	  "Timeout": 30000,
+	  "RetryPolicy": "exponential",
+	  "MaxRetries": 3
+	}
+  }
+}

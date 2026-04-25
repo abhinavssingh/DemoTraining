@@ -1,4 +1,4 @@
-﻿using DemoTraining.Features.Contact.Models;
+using DemoTraining.Features.Contact.Models;
 using DemoTraining.Features.StartPage.Models;
 using EPiServer.Filters;
 using EPiServer.ServiceLocation;
@@ -98,7 +98,9 @@ namespace DemoTraining.Business
         /// <returns></returns>
         public IEnumerable<ContactPage> GetContactPages()
         {
+#pragma warning disable CS0618 // SiteDefinition is obsolete in CMS 13, maintained for backward compatibility
             var contactsRootPageLink = _contentLoader.Get<StartPage>(SiteDefinition.Current.StartPage).ContactsPageLink;
+#pragma warning restore CS0618
 
             if (ContentReference.IsNullOrEmpty(contactsRootPageLink))
             {

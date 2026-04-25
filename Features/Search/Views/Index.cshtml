@@ -65,6 +65,14 @@
 
     <div class="row">
         <div class="span8 SearchResults">
+            @* TODO CMS13: Search results disabled - EPiServer.Find not yet CMS 13 compatible *@
+            @if (Model.SearchServiceDisabled)
+            {
+                <div class="alert alert-info">
+                    <p>Search functionality is temporarily disabled pending EPiServer.Find CMS 13 support.</p>
+                </div>
+            }
+            @* Previous search results code:
             @foreach (var hit in Model.Results)
             {
                 <div class="listResult">
@@ -73,6 +81,7 @@
                     <hr />
                 </div>
             }
+            *@
         </div>
     </div>
 
