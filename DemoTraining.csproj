@@ -54,5 +54,8 @@
     <None Include=".github\upgrades\cms-12-to-13-upgrade\GRAPH-SDK-SETUP-GUIDE.md" />
     <None Include=".github\upgrades\cms-12-to-13-upgrade\PHASE-2-SEARCH-ASSESSMENT.md" />
     <None Include=".github\upgrades\cms-12-to-13-upgrade\phase-c-net10-upgrade-completion.md" />
+    <None Include=".github\upgrades\optimizely-cms13-upgrade\execution-log.md" />
+    <None Include=".github\upgrades\optimizely-cms13-upgrade\scenario-instructions.md" />
+    <None Include=".github\upgrades\optimizely-cms13-upgrade\tasks.md" />
   </ItemGroup>
 </Project>
