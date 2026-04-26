@@ -1,10 +1,10 @@
 name: modernize-optimizely-cms12-to-cms13
 displayName: Comprehensive Optimizely CMS 12 → CMS 13 Upgrade
 description: >
-  Performs a deep, safe, and auditable modernization of an
-  Optimizely CMS 12 solution to CMS 13 by first upgrading
-  the solution platform and runtime, then upgrading CMS
-  dependencies, and finally refactoring required code.
+  Performs a complete and auditable upgrade of an Optimizely CMS 12
+  solution to CMS 13 by upgrading the platform runtime, aligning
+  CMS packages and service registration, resolving API breaking
+  changes, and validating the CMS 13 application and admin experience.
 
 appliesTo:
   languages: [csharp]
@@ -15,105 +15,114 @@ sourceGuidance:
   - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13
 
 guardrails:
-  - Do not refactor domain or business logic
-  - Prefer TODO comments over assumptions
-  - Explain all CMS 13 breaking changes inline
-  - No stylistic or formatting-only changes
-  - Do not upgrade Optimizely packages before solution platform upgrade
-  - Stop if platform upgrade fails and report blockers
+  - Do not migrate search functionality (handled by Graph skill)
+  - Do not refactor business/domain logic
+  - Resolve obsolete APIs before upgrading CMS packages
+  - CMS upgrade must succeed before search migration
+  - Every referenced package must be explicitly registered
+  - Stop immediately on platform, restore, or build failure
 
 tasks:
 
   # =========================================================
-  # Phase A — Repository & Architecture Analysis (READ-ONLY)
+  # Phase A — Repository Audit & Preparation (READ‑ONLY)
   # =========================================================
   - analyze-repository-structure
   - analyze-optimizely-footprint
-  - analyze-dotnet-hosting-model
-  - analyze-deprecated-apis
-  - analyze-third-party-packages
+  - analyze-service-registration-patterns
+  - analyze-obsolete-warnings
+  - analyze-third-party-package-compatibility
+  - identify-removed-features:
+      includes:
+        - DynamicProperties
+        - Mirroring
+        - Legacy PlugIns
 
   # =========================================================
-  # Phase B — Preconditions & Risk Validation (READ-ONLY)
+  # Phase B — Preconditions & Blocking Validation
   # =========================================================
   - validate-current-target-framework
-  - validate-sdk-and-tooling
-  - validate-database-compatibility
-  - validate-environment-assumptions
+  - validate-dotnet10-sdk-installed
+  - validate-database-backup-exists
+  - validate-no-unfixed-obsolete-apis
   - validate-cms13-prerequisites
 
   # =========================================================
-  # Phase C — SOLUTION / PLATFORM UPGRADE (MANDATORY)
-  # Must complete successfully before CMS package upgrades
+  # Phase C — Platform Runtime Upgrade (MANDATORY)
   # =========================================================
-  - plan-solution-upgrade-path
-  - upgrade-target-framework
-  - upgrade-dotnet-sdk-constraints
+  - upgrade-target-framework-to-net10
   - update-global-json-if-present
+  - update-docker-images-if-present
   - validate-build-after-platform-upgrade
   - generate-platform-upgrade-report
 
   # =========================================================
-  # Phase D — CMS DEPENDENCY UPGRADE
+  # Phase D — CMS Package Upgrade
   # =========================================================
   - inventory-nuget-packages
-  - upgrade-optimizely-core-packages
-  - align-optimizely-package-versions
-  - remove-deprecated-optimizely-packages
-  - validate-third-party-dependencies
+  - upgrade-episerver-and-optimizely-packages-to-13
+  - align-package-versions
+  - remove-incompatible-third-party-packages
+  - validate-dotnet-restore-success
 
   # =========================================================
-  # Phase E — Hosting & Bootstrapping
+  # Phase E — CMS 13 Package & Service Registration
+  # (VALIDATE → ENFORCE → VERIFY)
   # =========================================================
-  - analyze-program-cs
-  - update-program-cs-for-cms13
-  - analyze-startup-cs
-  - update-startup-services
-  - update-startup-middleware
+  - validate-required-cms13-packages
+  - validate-episerver-dependencyinjection-namespace
+
+  - validate-addcms-or-granular-registration
+  - enforce-addcms-or-full-granular-parity
+
+  - validate-removed-core-package-registrations
+  - enforce-removed-core-package-registrations
+
+  - validate-assembly-scanning-completeness
+  - enforce-assembly-scanning-failure-on-missing-add
+
+  - validate-database-compatibility-level
+  - enforce-database-compatibility-autoupgrade
+
+  - validate-service-registration-build
 
   # =========================================================
-  # Phase F — CMS Initialization & Infrastructure
+  # Phase F — CMS 13 API Breaking Changes
   # =========================================================
-  - identify-initialization-modules
-  - update-initializablemodule-usage
-  - update-service-locator-patterns
-  - update-dependency-injection-registrations
+  - replace-sitedefinition-with-application-model
+  - replace-start-page-resolution
+  - replace-pagereference-with-contentreference
+  - replace-filtereditems-with-items
+  - replace-initializationengine-assemblies
+  - remove-service-locator-usage
+  - update-initializable-modules
+  - update-content-type-repository-usage
+  - migrate-platform-htmlhelpers-to-taghelpers
 
   # =========================================================
-  # Phase G — Content APIs & Domain Code
+  # Phase G — Application Model Verification
   # =========================================================
-  - analyze-content-types
-  - update-content-type-attributes
-  - update-content-repository-usage
-  - update-url-and-routing-apis
+  - validate-application-created-from-site
+  - validate-start-page-resolution
+  - document-application-model
 
   # =========================================================
-  # Phase H — Controllers, Components & Features
+  # Phase H — Admin & UI Validation
   # =========================================================
-  - upgrade-controllers
-  - upgrade-view-components
-  - upgrade-features-and-blocks
-  - validate-rendering-logic
+  - validate-admin-url-changes
+  - validate-editor-ui-loads
+  - validate-content-creation-and-publishing
 
   # =========================================================
-  # Phase I — Configuration & Environment
+  # Phase I — Build & Runtime Stabilization
   # =========================================================
-  - analyze-appsettings
-  - update-appsettings-for-cms13
-  - validate-environment-specific-settings
-  - document-manual-configuration-steps
+  - resolve-build-errors
+  - suppress-non-blocking-obsoletes-only
+  - run-cms-startup-validation
 
   # =========================================================
-  # Phase J — Build Validation & Stabilization
+  # Phase J — Documentation & Audit Artifacts
   # =========================================================
-  - detect-compilation-errors
-  - apply-minimal-fixes-for-compilation
-  - flag-manual-runtime-verification-points
-
-  # =========================================================
-  # Phase K — Documentation & Audit Artifacts
-  # =========================================================
-  - generate-upgrade-summary
+  - generate-cms13-upgrade-summary
   - generate-breaking-changes-checklist
   - generate-post-upgrade-validation-guide
-  - generate-final-migration-report

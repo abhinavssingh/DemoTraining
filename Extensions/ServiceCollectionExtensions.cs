@@ -26,7 +26,6 @@ namespace DemoTraining.Extensions
             services.Configure<MvcOptions>(options => options.Filters.Add<PageContextActionFilter>());
 
             services.AddDisplayResolutions();
-            services.AddDetection();
 
             return services;
         }
