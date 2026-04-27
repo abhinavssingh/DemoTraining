@@ -23,6 +23,13 @@ ehthumbs.db
 desktop.ini
 /appsettings.Development.json
 
+# env
 .env*
 !.env.template
 dpkeys
+
+#guthub
+./github/upgardes
+
+#backups
+backups/
