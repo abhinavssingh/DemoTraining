@@ -22,7 +22,7 @@
     <PackageReference Include="EPiServer.Labs.GridView" Version="1.2.0" />
     <PackageReference Include="Optimizely.Graph.Cms.Query" Version="13.0.2" /> 
     <PackageReference Include="Optimizely.Graph.AspNetCore" Version="13.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
   </ItemGroup>
   
   <ItemGroup>

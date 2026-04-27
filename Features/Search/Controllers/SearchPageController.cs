@@ -30,15 +30,17 @@ public class SearchPageController : PageControllerBase<SearchPage>
     /// Async search action using Optimizely Graph
     /// Replaces legacy IClient.UnifiedSearchFor() pattern
     /// </summary>
-    public async Task<ViewResult> Index(SearchPage currentPage, SearchQuery q, CancellationToken cancellationToken = default)
+#pragma warning disable MVC1004 // Model binding ambiguity resolved via explicit [FromQuery] attribute
+    public async Task<ViewResult> Index(SearchPage currentPage, [FromQuery(Name = "q")] SearchQuery query, CancellationToken cancellationToken = default)
+#pragma warning restore MVC1004
     {
-        q ??= new SearchQuery();
+        query ??= new SearchQuery();
 
         // Build filter criteria from query parameters
         var filters = new GraphSearchFilters
         {
-            Sections = q.Sections ?? new List<string>(),
-            ContentTypes = q.Types ?? new List<string>(),
+            Sections = query.Sections ?? new List<string>(),
+            ContentTypes = query.Types ?? new List<string>(),
             OnlyPublished = true,
             ApplyAccessControl = true
         };
@@ -46,16 +48,16 @@ public class SearchPageController : PageControllerBase<SearchPage>
         // TODO CMS13: Once Graph SDK is available, this async call will use actual Graph API
         // Placeholder implementation returns empty results with message
         GraphSearchResult searchResult = await _searchService.SearchAsync(
-            q.Q ?? string.Empty,
+            query.Q ?? string.Empty,
             filters,
-            q.Page,
-            q.PageSize,
+            query.Page,
+            query.PageSize,
             cancellationToken);
 
         // Map Graph results to content model for view rendering
         var vm = new SearchContentModel(currentPage)
         {
-            SearchedQuery = q,
+            SearchedQuery = query,
             Results = MapSearchResults(searchResult),
             RawFacets = MapFacets(searchResult),
             SearchServiceDisabled = !searchResult.IsGraphServiceAvailable,
@@ -65,11 +67,11 @@ public class SearchPageController : PageControllerBase<SearchPage>
         // Add facets to model for UI rendering
         if (searchResult.Facets?.Count > 0)
         {
-            vm.Facets.Add(BuildFacet("Sections", searchResult.Facets, q.Sections));
-            vm.Facets.Add(BuildFacet("Content types", searchResult.Facets, q.Types));
+            vm.Facets.Add(BuildFacet("Sections", searchResult.Facets, query.Sections));
+            vm.Facets.Add(BuildFacet("Content types", searchResult.Facets, query.Types));
         }
 
-        _logger.LogInformation($"Search completed: {q.Q} returned {searchResult.TotalCount} results");
+        _logger.LogInformation($"Search completed: {query.Q} returned {searchResult.TotalCount} results");
 
         return View("~/Features/Search/Views/Index.cshtml", vm);
     }
