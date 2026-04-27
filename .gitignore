@@ -28,8 +28,8 @@ desktop.ini
 !.env.template
 dpkeys
 
-#guthub
-./github/upgrades
+#github
+/.github/upgrades
 
 #backups
 backups/
