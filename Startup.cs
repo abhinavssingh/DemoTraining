@@ -35,8 +35,6 @@ namespace DemoTraining
                 // .AddCmsTagHelpers()
                 .AddDemoTraining()
                 .AddGridView(options => options.IsViewEnabled = true)
-                // STAGE 2 CMS13: Register Optimizely Graph for search functionality
-                .AddOptimizelyGraph(_configuration)
                 // TODO CMS13: AddAdminUserRegistration is not available in CMS 13 - admin registration may be automatic
                 // .AddAdminUserRegistration()
                 // TODO CMS13: AddEmbeddedLocalization may have been moved or renamed in CMS 13
