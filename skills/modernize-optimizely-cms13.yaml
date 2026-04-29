@@ -63,132 +63,598 @@ tasks:
 # =========================================================
 # Phase D — CMS Package Upgrade
 # =========================================================
-- inventory-nuget-packages
-- upgrade-episerver-and-optimizely-packages-to-13:
-      instructions: >
-        Upgrade all EPiServer.* and Optimizely.* CMS packages
-        to their CMS 13–compatible versions.
-        Ensure no mixed major versions remain.
-- install-required-cms13-packages:
-    packages:
-      - EPiServer.CMS.UI.AspNetIdentity
-      - EPiServer.Cms.UI.VisitorGroups
-    instructions: >
-      CMS 13 removed these packages as transitive dependencies.
-      If the solution uses Identity or Visitor Groups functionality,
-      they MUST be explicitly added to the project file.
-- align-package-versions:
-    strategy: strict
-    instructions: >
-      Ensure all EPiServer.* and Optimizely.* packages target
-      the same CMS 13 release line to avoid NU1608 conflicts.
-- remove-incompatible-third-party-packages:
-    instructions: >
-      Remove or upgrade any third-party NuGet packages
-      that are not compatible with CMS 13 or .NET 10.
-- validate-dotnet-restore-success:
-    instructions: >
-      Run dotnet restore and fail immediately if:
-      - NU1202 (framework incompatibility)
-      - NU1608 (version constraint violation)
-      - missing transitive dependencies
+
+- id: inventory-nuget-packages-Server.* and Optimizely.* packages must be reviewed before CMS 13 upgrade
+  description: Inventory all NuGet package references and classify CMS relevance
+  breakingChange:
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Inventory third-party packages
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#third-party-package-compatibility
+
+  enforcement:
+    requirements:
+      - Enumerate all EPiServer.* and Optimizely.* packages
+      - Enumerate all third‑party packages
+      - Classify each package as:
+          - CMS‑core
+          - CMS‑UI
+          - CMS‑extension
+          - Third‑party
+
+  failIf:
+    - Package inventory cannot be produced
+    - EPiServer or Optimizely packages exist without classification
+
 
 # =========================================================
 # Phase E — CMS 13 Service Registration (VALIDATE → ENFORCE)
 # =========================================================
-- validate-episerver-dependencyinjection-namespace
-- enforce-addcms-or-full-granular-parity
-- fail-on-missing-cms-core-services
-- forbid-custom-replacement-services
-- remove-generated-cms-surrogate-services
-- validate-database-compatibility-level
-- enforce-database-compatibility-autoupgrade
-- validate-service-registration-build
+
+- id: validate-episerver-dependencyinjection-namespace
+  description: Enforce correct Optimizely DI namespace usage
+  breakingChange:
+    summary: CMS 13 service registration requires EPiServer.DependencyInjection
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Update service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#update-service-registration
+
+  enforcement:
+    rules:
+      - All CMS service registrations MUST use:
+          using: EPiServer.DependencyInjection
+      - CMS service registration MAY NOT rely on:
+          using: Microsoft.Extensions.DependencyInjection
+
+  failIf:
+    - Any call to:
+        - AddCms()
+        - AddCmsCore()
+        - AddCmsUI()
+        - AddAdmin()
+        - exists without EPiServer.DependencyInjection imported
+
+      
+- id: enforce-addcms-or-full-granular-parity
+  description: Enforce complete CMS service registration model
+  breakingChange:
+    summary: CMS 13 requires either AddCms() or full granular parity
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Update service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#update-service-registration
+
+  enforcement:
+    rules:
+      - ONE of the following MUST be true:
+          - services.AddCms()
+          - services include ALL of:
+              - AddCmsHost()
+              - AddCmsCore()
+              - AddCmsHtmlHelpers()
+              - AddCmsTagHelpers()
+              - AddCmsUI()
+              - AddAdmin()
+              - AddTinyMce()
+              - AddCmsImageSharpImageLibrary()
+              - AddOptimizelyCmsServicev1()
+              - AddOAuthEndpoints()
+
+  failIf:
+    - Partial granular CMS registration detected
+    - Custom substitutes used instead of official Add* methods
+
+
+- id: fail-on-missing-cms-core-services
+  description: Fail if mandatory CMS 13 services are not registered
+  breakingChange:
+    summary: Missing CMS services cause startup crashes in CMS 13
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Verify service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#verify-service-registration
+
+  enforcement:
+    mustRegister:
+      - IContentRepository
+      - IContentLoader
+      - IContentTypeRepository
+      - IApplicationResolver
+      - IUrlResolver
+
+  failIf:
+    - Any required CMS core service is not registered
+
+
+- id: forbid-custom-replacement-services
+  description: Prevent replacement of CMS core services with custom implementations
+  breakingChange:
+    summary: CMS 13 forbids replacing core services with custom surrogates
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Assembly scanning and service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#update-service-registration
+
+  enforcement:
+    rules:
+      - CMS core service interfaces MUST NOT be:
+          - Replaced
+          - Decorated
+          - Overridden
+
+  failIf:
+    - Custom implementation registered for:
+        - IContentRepository
+        - IContentLoader
+        - IApplicationResolver
+        - IServiceAccessor
+
+
+- id: validate-database-compatibility-level
+  description: Validate SQL Server compatibility level for CMS 13
+  breakingChange:
+    summary: CMS 13 requires SQL compatibility level 140 or higher
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Database and data considerations
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#database-and-data-considerations
+
+  enforcement:
+    rules:
+      - SQL compatibility level MUST be >= 140
+
+  failIf:
+    - Database compatibility < 140
+
+- id: enforce-database-compatibility-autoupgrade
+  description: Enforce automatic database compatibility upgrade
+  breakingChange:
+    summary: CMS 13 supports automatic SQL compatibility upgrade during startup
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Database compatibility handling
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#database-and-data-considerations
+
+  enforcement:
+    rules:
+      - Startup MUST include:
+          services.Configure<DataAccessOptions>(options =>
+            options.UpdateDatabaseCompatibilityLevel = true)
+
+  failIf:
+    - Database compatibility is < 140 AND autoupgrade is not configured
+
+- id: validate-service-registration-build
+  description: Validate build and startup after service registration
+  breakingChange:
+    summary: Service registration issues manifest as build or startup failures
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Verify service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#verify-service-registration
+
+  enforcement:
+    mustRun:
+      - dotnet build
+
+  failIf:
+    - IServiceCollection errors
+    - Startup exception:
+        - No service registered
+        - Unable to find module assembly
 
 # =========================================================
 # Phase F — CMS 13 API Breaking Changes (CANONICAL – COMPLETE)
 # =========================================================
 
 - id: replace-sitedefinition-with-application-model
-  description: Replace legacy SiteDefinition APIs with the CMS 13 application model.
+  description: Replace SiteDefinition APIs with CMS 13 Application model.
   breakingChange:
-    summary: SiteDefinition is removed and replaced by the Application model in CMS 13.
+    summary: SiteDefinition APIs are removed and must not be used in CMS 13.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: SiteDefinition replaced by Application model
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#sitedefinition-replaced-by-application-model
 
+  enforcement:
+    forbiddenPatterns:
+      - SiteDefinition.Current
+      - using EPiServer.Web
+
+    requiredActions:
+      - Inject IApplicationResolver where SiteDefinition was used
+      - Replace StartPage resolution with application.StartPage
+      - Remove all TODO comments related to CMS13 SiteDefinition
+
+    failureConditions:
+      - Any remaining SiteDefinition usage after task execution
+
+
 - id: replace-start-page-resolution
-  description: Replace ApplicationResolver.GetByContext usage with ContentReference.StartPage.
+  description: Replace legacy start page resolution with ContentReference.StartPage.
   breakingChange:
-    summary: Start page resolution is simplified in CMS 13.
+    summary: >
+      CMS 13 simplifies start page resolution. Context-based resolution
+      and GetByContext patterns are replaced by ContentReference.StartPage.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: Start page resolution simplified
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#start-page-resolution-simplified
 
+  enforcement:
+    forbiddenPatterns:
+      - IApplicationResolver.GetByContext
+      - application.RoutingEntryPoint
+      - GetByContext()
+      - StartPage via application context
+
+    requiredActions:
+      - Replace all start page lookups with ContentReference.StartPage
+      - Remove any logic that resolves start page via application context
+      - Simplify conditional checks to compare against ContentReference.StartPage
+      - Remove TODO comments related to CMS13 start page resolution
+
+    examples:
+      before: |
+        var app = _applicationResolver.GetByContext();
+        var startPage = app.RoutingEntryPoint;
+
+        if (startPage.CompareToIgnoreWorkID(currentPage.ContentLink)) { ... }
+
+      after: |
+        if (ContentReference.StartPage.CompareToIgnoreWorkID(currentPage.ContentLink)) { ... }
+
+    failureConditions:
+      - Any GetByContext() usage remains for start page resolution
+      - Any RoutingEntryPoint usage remains
+
 - id: replace-pagereference-with-contentreference
   description: Replace PageReference and PageLink usage with ContentReference and ContentLink.
   breakingChange:
-    summary: CMS 13 unifies all content references under ContentReference.
+    summary: >
+      CMS 13 removes PageReference and PageLink APIs and unifies
+      all content references under ContentReference and ContentLink.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: PageReference replaced by ContentReference
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#pagereference-replaced-by-contentreference
 
+  enforcement:
+    forbiddenPatterns:
+      - PageReference
+      - PageData.PageLink
+      - PageLink
+      - new PageReference(
+      - using EPiServer.Core.PageReference
+
+    requiredActions:
+      - Replace all PageReference variables, parameters, and return types with ContentReference
+      - Replace PageData.PageLink with PageData.ContentLink
+      - Update method signatures, constructors, and extension methods accordingly
+      - Update LINQ queries and comparisons to use ContentReference APIs
+      - Remove all TODO comments related to CMS13 PageReference migration
+
+    examples:
+      before: |
+        PageReference pageRef = currentPage.PageLink;
+
+        public void ProcessPage(PageReference page)
+        {
+            if (page.CompareToIgnoreWorkID(startPage)) { ... }
+        }
+
+      after: |
+        ContentReference contentRef = currentPage.ContentLink;
+
+        public void ProcessContent(ContentReference content)
+        {
+            if (content.CompareToIgnoreWorkID(ContentReference.StartPage)) { ... }
+        }
+
+    failureConditions:
+      - Any PageReference type remains in codebase
+      - Any usage of PageLink remains in runtime code
+
 - id: replace-filtereditems-with-items
   description: Replace ContentArea.FilteredItems with ContentArea.Items.
   breakingChange:
-    summary: ContentArea.FilteredItems is removed in CMS 13 and replaced by Items with changed behavior.
+    summary: >
+      CMS 13 removes ContentArea.FilteredItems. All content area
+      rendering must use ContentArea.Items, which has different
+      filtering behavior that must be validated.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: ContentArea.FilteredItems removed
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#contentarea-filtereditems-removed
 
+  enforcement:
+    forbiddenPatterns:
+      - ContentArea.FilteredItems
+      - .FilteredItems
+      - GetFilteredItems()
+
+    requiredActions:
+      - Replace all ContentArea.FilteredItems usage with ContentArea.Items
+      - Update rendering logic to handle manual filtering if required
+      - Review visibility, access control, and personalization behavior
+      - Add explicit filtering where FilteredItems previously handled it implicitly
+      - Remove TODO comments related to CMS13 ContentArea migration
+
+    examples:
+      before: |
+        foreach (var item in myContentArea.FilteredItems)
+        {
+            Render(item);
+        }
+
+      after: |
+        foreach (var item in myContentArea.Items
+                     .Where(i => i.IsVisible()))
+        {
+            Render(item);
+        }
+
+    validationNotes:
+      - ContentArea.Items does NOT apply the same filtering as FilteredItems
+      - Editors must validate rendering behavior after migration
+      - Personalized or visitor‑group logic may require explicit handling
+
+    failureConditions:
+      - Any ContentArea.FilteredItems usage remains in runtime code
+
 - id: replace-initializationengine-assemblies
-  description: Replace InitializationEngine.Assemblies with AppDomain assembly discovery.
+  description: >
+    Replace all usages of InitializationEngine.Assemblies with
+    AppDomain-based assembly discovery and prevent legacy usage.
   breakingChange:
-    summary: InitializationEngine.Assemblies is removed in CMS 13.
+    summary: >
+      InitializationEngine.Assemblies is removed in CMS 13.
+      Assembly discovery must use AppDomain.CurrentDomain.GetAssemblies().
     appliesTo: CMS 12 → CMS 13
     reference:
       title: InitializationEngine.Assemblies removed
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#initializationengineassemblies
+  enforcement:
+    rules:
+      - Replace:
+          from: EPiServer.Framework.Initialization.InitializationEngine.Assemblies
+          to: AppDomain.CurrentDomain.GetAssemblies()
+      - Replace any custom initialization scanning logic that depends on CMS‑provided assembly lists
+  failIf:
+    - Any reference to InitializationEngine.Assemblies remains in runtime code
 
 - id: remove-service-locator-usage
-  description: Replace ServiceLocator and Locate.Advanced usage with constructor injection.
+  description: Replace ServiceLocator usage with constructor-based dependency injection.
   breakingChange:
-    summary: Service locator APIs are removed and replaced with dependency injection.
+    summary: >
+      CMS 13 removes ServiceLocator and Locate.Advanced APIs.
+      All dependencies must be resolved using constructor
+      injection or InitializationEngine.Services where required.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: Service locator pattern replaced by dependency injection
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#service-locator-pattern-replaced-by-dependency-injection
 
-- id: update-initializable-modules
-  description: Update InitializableModule code to resolve services from InitializationEngine.Services.
+  enforcement:
+    forbiddenPatterns:
+      - ServiceLocator.Current
+      - ServiceLocator.GetInstance
+      - Locate.Advanced
+      - InitializationEngine.Locate
+      - using EPiServer.ServiceLocation
+
+    requiredActions:
+      - Replace ServiceLocator usage with constructor injection in:
+          Controllers
+          Services
+          Helpers
+          Models
+      - Refactor extension methods to accept required services as parameters
+      - Refactor static/helper classes into DI-registered services where needed
+      - Refactor view base classes to receive dependencies via constructor
+      - Use InitializationEngine.Services.GetService<T>() only in InitializationModule
+      - Remove all TODO comments related to CMS13 ServiceLocator migration
+
+    examples:
+      before: |
+        var loader = ServiceLocator.Current.GetInstance<IContentLoader>();
+
+      after: |
+        public class MyService
+        {
+            private readonly IContentLoader _contentLoader;
+
+            public MyService(IContentLoader contentLoader)
+            {
+                _contentLoader = contentLoader;
+            }
+        }
+
+    failureConditions:
+      - Any ServiceLocator usage remains after migration
+      - Any Locate.Advanced usage remains
+      - Any InitializationEngine.Locate usage remains
+
+
+- id: remove-generated-cms-surrogate-services
+  description: Remove CMS 12-era surrogate or factory-generated services
   breakingChange:
-    summary: InitializableModule service resolution APIs changed in CMS 13.
+    summary: CMS 12 surrogate services are not compatible with CMS 13
     appliesTo: CMS 12 → CMS 13
     reference:
-      title: Initialization module API changes
-      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#initialization-module-changes
+      title: Removed features and deprecated patterns
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#removed-features
+
+  enforcement:
+    rules:
+      - Remove:
+          - ServiceLocator-based factories
+          - Locate.Advanced.GetInstance patterns
+          - Custom CMS service resolvers
+
+  failIf:
+    - ServiceLocator or Locate.Advanced usage remains
+
+- id: update-initializable-modules- >
+  description: Update InitializableModule code to resolve services using CMS 13 patterns.
+  breakingChange:
+  summary: >
+      CMS 13 removes legacy service resolution in initialization modules.
+      Services must be resolved via constructor injection or
+      InitializationEngine.Services / context.Services.
+  appliesTo: CMS 12 → CMS 13
+  reference:
+    title: Initialization module API changes
+    url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#initialization-module-changes
+
+  enforcement:
+    forbiddenPatterns:
+      - InitializationEngine.Locate
+      - context.Locate
+      - ServiceLocator inside InitializableModule
+
+    requiredActions:
+      - Replace InitializationEngine.Locate<T>() with:
+          constructor injection OR
+          context.Services.GetRequiredService<T>() OR
+          InitializationEngine.Services.GetService<T>()
+      - Refactor initialization modules to accept dependencies via constructor where possible
+      - Remove all TODO comments related to CMS13 initialization refactoring
+
+    examples:
+      before: |
+        var loader = InitializationEngine.Locate<IContentLoader>();
+
+      after: |
+        var loader = context.Services.GetRequiredService<IContentLoader>();
+
+    failureConditions:
+      - Any InitializationEngine.Locate usage remains
+      - Any ServiceLocator usage inside InitializableModule remains
+
 
 - id: update-content-type-repository-usage
   description: Remove generic type arguments from IContentTypeRepository usage.
   breakingChange:
-    summary: IContentTypeRepository is no longer generic in CMS 13.
+    summary: >
+      CMS 13 removes the generic IContentTypeRepository<T>.
+      All usage must switch to the non-generic IContentTypeRepository.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: IContentTypeRepository no longer generic
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#icontenttyperepository-no-longer-generic
 
+  enforcement:
+    forbiddenPatterns:
+      - IContentTypeRepository<
+      - IContentTypeRepository<T>
+
+    requiredActions:
+      - Replace IContentTypeRepository<T> with IContentTypeRepository
+      - Update constructor signatures accordingly
+      - Update extension methods, helpers, and services using the generic form
+      - Remove TODO comments related to CMS13 content type repository migration
+
+    examples:
+      before: |
+        IContentTypeRepository<ContentType> repository;
+
+      after: |
+        IContentTypeRepository repository;
+
+    failureConditions:
+      - Any generic IContentTypeRepository usage remains in codebase
+
+
 - id: migrate-platform-htmlhelpers-to-taghelpers
   description: Replace legacy CMS HtmlHelpers with CMS 13 TagHelpers.
   breakingChange:
-    summary: Platform navigation HtmlHelpers are replaced by TagHelpers in CMS 13.
+    summary: >
+      CMS 13 removes platform HTML helpers and replaces them
+      with TagHelpers for navigation and UI rendering.
     appliesTo: CMS 12 → CMS 13
     reference:
       title: UI and rendering changes
       url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#ui-and-rendering
+
+  enforcement:
+    forbiddenPatterns:
+      - HtmlHelper
+      - Html.EPi
+      - Html.PropertyFor
+      - Html.ContentLink
+      - EPiServer.Web.Mvc.Html
+
+    requiredActions:
+      - Replace CMS HtmlHelpers with TagHelpers
+      - Ensure TagHelpers are registered via:
+          addTagHelper *, EPiServer.Cms.AspNetCore
+      - Update Razor views to use CMS 13 navigation TagHelpers
+      - Validate rendering output matches pre-upgrade behavior
+      - Remove TODO comments related to CMS13 UI migration
+
+    examples:
+      before: |
+        @Html.PropertyFor(x => x.MainBody)
+
+      after: |
+        <epi-property property="MainBody" />
+
+    failureConditions:
+      - Any legacy CMS HtmlHelper usage remains in Razor views
+
+
+- id: replace-episerver-web-hosting-environment- id: replace- compliance in upgrade summary
+
+  failIf:
+    - Any reference to:
+        - EPiServer.Web.IWebHostingEnvironment
+        - EPiServer.Web.WebHostingEnvironment
+        - EPiServer.Web.VirtualPathResolver
+    - Any logic depends on virtual CMS application paths
+  description: >
+    Enforce replacement of legacy EPiServer.Web hosting APIs
+    with ASP.NET Core IWebHostEnvironment and validate CMS 13
+    hosting compliance.
+  breakingChange:
+    summary: >
+      EPiServer.Web hosting abstractions are obsolete in CMS 13.
+      All hosting and file system access must use
+      Microsoft.AspNetCore.Hosting.IWebHostEnvironment.
+      Virtual application paths are no longer supported.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Obsolete hosting APIs
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/framework-and-platform-breaking-changes#episerverweb-hosting
+
+  enforcement:
+    rules:
+
+      # -----------------------------------------------------
+      # Required CMS 13 Hosting Model
+      # -----------------------------------------------------
+      - Controllers, Startup, and infrastructure MUST use:
+          type: Microsoft.AspNetCore.Hosting.IWebHostEnvironment
+
+      - File system access MUST use:
+          - IWebHostEnvironment.ContentRootPath
+          - IWebHostEnvironment.WebRootPath
+
+      # -----------------------------------------------------
+      # Explicitly Forbidden APIs
+      # -----------------------------------------------------
+      - Remove and forbid:
+          - EPiServer.Web.IWebHostingEnvironment
+          - EPiServer.Web.WebHostingEnvironment
+          - EPiServer.Web.VirtualPathResolver
+          - WebRootVirtualPath
+
+      # -----------------------------------------------------
+      # Validation-Only When Already Compliant
+      # -----------------------------------------------------
+      - If IWebHostEnvironment is already used:
+          - Do not modify code
 
 # =========================================================
 # Phase G — Application Model Verification
