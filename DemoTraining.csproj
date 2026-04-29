@@ -3,9 +3,6 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- TODO CMS13: Suppress obsolete API warnings for backward compatibility during CMS 13 migration -->
-    <!-- CS0618: SiteDefinition, PageReference, and other deprecated CMS 12 APIs are maintained for backward compatibility -->
-    <NoWarn>CS0618;$(NoWarn)</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
