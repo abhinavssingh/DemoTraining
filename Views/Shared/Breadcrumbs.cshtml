@@ -1,7 +1,11 @@
 @using DemoTraining.Helpers
+@using DemoTraining.Models.Pages
+@using DemoTraining.Models.ViewModels
 @using EPiServer.Core
 @using EPiServer.Web
 @using Microsoft.AspNetCore.Mvc.Razor
+
+@model IPageViewModel<SitePageData>
 
 @*Helper used as template for a page in the bread crumb, recursively triggering the rendering of the next page*@
 
@@ -36,8 +40,10 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb d-none d-lg-flex">
         <li class="breadcrumb-item">
-            <a epi-property="@SiteDefinition.Current.StartPage" />
+            <a epi-property="@Model.Section.ContentLink" />
         </li>
-        @Html.MenuList(SiteDefinition.Current.StartPage, ItemTemplate, requireVisibleInMenu: false, requirePageTemplate: false)
+        @Html.MenuList(Model.Section.ContentLink, ItemTemplate, requireVisibleInMenu: false, requirePageTemplate: false)
     </ol>
 </nav>
+
+

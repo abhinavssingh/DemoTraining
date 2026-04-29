@@ -29,7 +29,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        @Html.MenuList(SiteDefinition.Current.StartPage, ItemTemplate)
+                        @Html.MenuList(Model.Section.ContentLink, ItemTemplate)
                     </ul>
                 </div>
             </div>
@@ -44,5 +44,9 @@
 
     </div>
 </header>
+
+
+
+
 
 

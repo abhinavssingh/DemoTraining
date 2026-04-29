@@ -32,6 +32,8 @@ namespace DemoTraining.Business
 
         public virtual LayoutModel CreateLayoutModel(ContentReference currentContentLink, HttpContext httpContext)
         {
+            // TODO CMS13: SiteDefinition.Current is deprecated. Use IApplicationResolver instead.
+            // This is tracked in the CMS 13 deprecation analysis.
             var startPageContentLink = SiteDefinition.Current.StartPage;
 
             // Use the content link with version information when editing the startpage,
@@ -67,6 +69,8 @@ namespace DemoTraining.Business
         {
             var currentContent = _contentLoader.Get<IContent>(contentLink);
 
+            // TODO CMS13: SiteDefinition.Current and .RootPage are deprecated in CMS 13.
+            // Should be replaced with IApplicationResolver and SystemDefinition.
             static bool isSectionRoot(ContentReference contentReference) =>
                ContentReference.IsNullOrEmpty(contentReference) ||
                contentReference.Equals(SiteDefinition.Current.StartPage) ||

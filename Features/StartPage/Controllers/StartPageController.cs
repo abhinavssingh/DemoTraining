@@ -16,6 +16,7 @@ public class StartPageController : PageControllerBase<Page.StartPage>
         var model = PageViewModel.Create(currentPage);
 
         // Check if it is the StartPage or just a page of the StartPage type.
+        // TODO CMS13: SiteDefinition.Current is deprecated. Use IApplicationResolver instead.
         if (SiteDefinition.Current.StartPage.CompareToIgnoreWorkID(currentPage.ContentLink))
         {
             // Connect the view models logotype property to the start page's to make it editable
