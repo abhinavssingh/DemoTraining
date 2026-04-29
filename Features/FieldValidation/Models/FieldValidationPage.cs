@@ -83,11 +83,11 @@ public class FieldValidationPage : SitePageData
     public virtual ContentReference SingleMediaFile { get; set; }
 
     [Display(GroupName = "Content Reference Types")]
-    public virtual PageReference SinglePage { get; set; }
+    public virtual ContentReference SinglePage { get; set; }
 
     [Display(GroupName = "Content Reference Types")]
     [AllowedTypes(typeof(HomePage.Models.HomePage), typeof(FieldValidationPage))]
-    public virtual PageReference SingleStartOrTypesPage { get; set; }
+    public virtual ContentReference SingleStartOrTypesPage { get; set; }
 
     [Display(GroupName = "Content Reference Types")]
     public virtual ContentArea MultipleContentItems { get; set; }

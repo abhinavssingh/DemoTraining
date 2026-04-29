@@ -2,10 +2,15 @@ name: modernize-optimizely-search-to-graph
 displayName: Migrate Optimizely Search & Navigation to Optimizely Graph
 description: >
   Migrates Optimizely Search & Navigation (EPiServer.Find)
-  usage to Optimizely Graph for CMS 13, implementing
-  all required Startup registrations, configuration,
-  async Graph query patterns, and UI wiring exactly as
-  described in the official Alloy migration guide.
+  usage to Optimizely Graph for CMS 13, replacing legacy
+  Find APIs with the official Optimizely Graph C# SDK,
+  enforcing explicit Graph service registration and
+  canonical configuration, query rewrites, and UI wiring.
+
+appliesTo:
+  languages: [csharp]
+  frameworks: [aspnetcore]
+  cms: optimizely
 
 sourceGuidance:
   - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13
@@ -17,68 +22,106 @@ guardrails:
   - All Graph queries must be asynchronous
   - Do not invent undocumented configuration keys
   - Do not hide Graph registrations behind extension methods
-  - Add TODOs only for SDK‑dependent logic, not wiring
+  - Do not create custom Graph abstraction services
 
 tasks:
 
-  # =========================================================
-  # Phase A — Search Usage Analysis (READ‑ONLY)
-  # =========================================================
-  - id: analyze-search
-    description: Locate legacy Optimizely Search & Navigation usage
-    instructions: >
-      Scan the solution for EPiServer.Find usage including:
-      IClient, Search<T>(), For(), Filter(),
-      FilterForVisitor(), Take(), GetContentResult(),
-      UnifiedSearch, and FindOptions.
-      Document expected behavior for each query. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+# =========================================================
+# Phase A — Search Usage Analysis (READ‑ONLY)
+# =========================================================
+- id: analyze-search
+  description: Locate Optimizely Search & Navigation (Find) usage
+  breakingChange:
+    summary: Optimizely Search & Navigation is deprecated and removed in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Migration overview
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#migration-overview
+  instructions: >
+    Scan the solution for EPiServer.Find usage including:
+      IClient, Search<T>(), For(), Filter(), FilterForVisitor(),
+      Take(), GetContentResult(), UnifiedSearch, and FindOptions.
+    Document expected behavior for each query to preserve intent.
 
-  # =========================================================
-  # Phase B — Package Replacement
-  # =========================================================
-  - id: replace-search-packages
-    description: Replace Find packages with Graph packages
-    instructions: >
-      Remove packages:
-        - EPiServer.Find
-        - EPiServer.Find.Cms
-        - EPiServer.Find.Framework
-        - Wangkanai.Detection (if present)
-      Add:
-        - Optimizely.Graph.Cms.Query 13.0.2
-        - Optimizely.Graph.AspNetCore 13.0.2
-      Restore packages and expect build errors due to
-      Find API usage that will be migrated next. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+# =========================================================
+# Phase B — Package Replacement
+# =========================================================
+- id: replace-search-packages
+  description: Replace EPiServer.Find packages with Optimizely Graph packages
+  breakingChange:
+    summary: Search & Navigation packages are removed and replaced by Optimizely Graph.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Replace Find NuGet packages
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#replace-find-nuget-packages
+  instructions: >
+    Remove packages:
+      - EPiServer.Find
+      - EPiServer.Find.Cms
+      - EPiServer.Find.Framework
+      - Wangkanai.Detection (if present)
 
-  # =========================================================
-  # Phase C — REQUIRED Startup & Middleware Registration
-  # =========================================================
-  - id: register-graph-services
-    description: Register required Optimizely Graph services
-    instructions: >
-      Update Startup.cs (or Program.cs) to:
-      - Remove:
-          services.AddFind()
-          services.AddDetection()
-          app.UseDetection()
-      - Add:
-          services.AddContentGraph();
-          services.AddGraphContentClient();
-          services.AddVisitorGroupsCore();
-      - Add middleware:
-          app.UseGraphTrackingScripts();
+    Add:
+      - Optimizely.Graph.Client 1.5.0
+      - Optimizely.Graph.Cms 13.0.2
+      - Optimizely.Graph.Cms.Query 13.0.2
+      - Optimizely.Graph.AspNetCore 13.0.2
+      - EPiServer.Cms.UI.ContentManager 13.0.2 (if not already present)
 
-      These registrations are mandatory and must be explicit. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+    Restore packages; expect compile errors until query migration completes.
 
-  # =========================================================
-  # Phase D — Configuration (STRICT & CANONICAL)
-  # =========================================================
-  - id: configure-graph
-    description: Apply canonical Optimizely Graph configuration
-    instructions: >
-      Remove EPiServer:Find configuration.
-      Add EXACTLY the following structure to appsettings.json:
+# =========================================================
+# Phase C — REQUIRED Graph Service Registration
+# (HARD ENFORCEMENT — NO CUSTOM GRAPH SERVICES)
+# =========================================================
+- id: register-graph-services
+  description: Register Optimizely Graph services explicitly
+  breakingChange:
+    summary: Graph services must be explicitly registered; Find services are removed.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Update service registration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#update-service-registration
+  instructions: >
+    Remove legacy Search & Navigation registrations:
+      - services.AddFind()
+      - services.AddDetection()
+      - app.UseDetection()
 
+    Add Graph services directly (NO wrappers):
+      - services.AddContentGraph()
+      - services.AddContentManager()
+      - services.AddGraphContentClient()
+      - services.AddVisitorGroupsCore()
+
+    Add Graph middleware:
+      - app.UseGraphTrackingScripts()
+
+    FORBIDDEN:
+      - GraphServiceCollectionExtensions
+      - IGraphSearchService / GraphSearchService
+      - Any Graph wrapper or adapter services
+
+    Controllers and services MUST inject:
+      Optimizely.Graph.Cms.Query.IGraphContentClient
+
+    FAIL if Graph services are not registered exactly as above.
+
+# =========================================================
+# Phase D — Graph Configuration
+# =========================================================
+- id: configure-graph
+  description: Replace Find configuration with canonical Graph configuration
+  breakingChange:
+    summary: EPiServer:Find configuration is replaced by Optimizely:Graph.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Update configuration
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#update-configuration
+  instructions: >
+    Remove EPiServer:Find configuration.
+
+    Add EXACT configuration:
       "Optimizely": {
         "Graph": {
           "GatewayAddress": "https://cg.optimizely.com",
@@ -88,88 +131,92 @@ tasks:
         }
       }
 
-      Values must come from the Graph Management Portal.
-      Do not add undocumented keys. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+    Do not add undocumented keys.
 
-  # =========================================================
-  # Phase E — Namespace & Interface Migration
-  # =========================================================
-  - id: migrate-namespaces
-    description: Replace Search & Navigation namespaces
-    instructions: >
-      Replace:
-        EPiServer.Find.* → Optimizely.Graph.Cms.Query
-      Remove unused namespaces such as:
-        EPiServer.Find.Framework.*
-        EPiServer.Find.Helpers.*
-        EPiServer.Find.UI
-      Replace IClient with IGraphContentClient injected via DI. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+# =========================================================
+# Phase E — Namespace & Client Migration
+# =========================================================
+- id: migrate-namespaces
+  description: Replace Find namespaces and IClient usage
+  breakingChange:
+    summary: IClient and Find namespaces are replaced by IGraphContentClient.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Replace namespaces and client usage
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#replace-namespaces
+  instructions: >
+    Replace EPiServer.Find.* with Optimizely.Graph.Cms.Query.
+    Remove Find helper and UI namespaces.
+    Replace IClient injection with IGraphContentClient.
 
-  # =========================================================
-  # Phase F — Query & Code Migration
-  # =========================================================
-  - id: migrate-search-code
-    description: Rewrite Find queries using Graph APIs
-    instructions: >
-      Apply official API mappings:
-        - Search<T>() → QueryContent<T>()
-        - For() → SearchFor()
-        - Filter() → Where()
-        - FilterForVisitor() → WithDisplayFilters()
-        - Take() → Limit()
-        - GetContentResult() → await GetAsContentAsync()
+# =========================================================
+# Phase F — Query & Code Migration
+# =========================================================
+- id: migrate-search-code
+  description: Rewrite Find queries using Graph QueryContent APIs
+  breakingChange:
+    summary: Find search APIs are replaced by async Graph SDK QueryContent APIs.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Rewrite search queries
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#rewrite-search-queries
+  instructions: >
+    Apply official API mappings:
+      - Search<T>() → QueryContent<T>()
+      - For() → SearchFor()
+      - Filter() → Where()
+      - FilterForVisitor() → WithDisplayFilters()
+      - Take() → Limit()
+      - GetContentResult() → await GetAsContentAsync()
 
-      Ensure all queries:
-        - Use async/await
-        - Include .IncludeTotal()
-        - Preserve paging, sorting, relevance
+    Enforce async/await and IncludeTotal().
+    Preserve paging, sorting, and relevance behavior.
 
-      Rewrite controllers and services accordingly. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+# =========================================================
+# Phase G — Razor Views & Tracking
+# =========================================================
+- id: update-views
+  description: Update Razor views to use Graph TagHelpers
+  breakingChange:
+    summary: Graph introduces TagHelpers for tracking and analytics.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Update Razor views
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#update-razor-views
+  instructions: >
+    Add to _ViewImports.cshtml:
+      @addTagHelper *, Optimizely.Graph.AspNetCore
 
-  # =========================================================
-  # Phase G — Razor Views & Tracking
-  # =========================================================
-  - id: update-views
-    description: Update Razor views for Graph tracking
-    instructions: >
-      Update _ViewImports.cshtml:
-        @addTagHelper *, Optimizely.Graph.AspNetCore
+    Add to layouts:
+      <graph-tracking-setup />
 
-      Update layouts to include:
-        <graph-tracking-setup />
+    Replace search links with <graph-trackable-link>.
 
-      Replace search result links with:
-        <graph-trackable-link> when click tracking is used. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
-
-  # =========================================================
-  # Phase H — Cleanup & Validation
-  # =========================================================
-  - id: cleanup-search
-    description: Final cleanup and validation
-    instructions: >
-      Ensure:
+# =========================================================
+# Phase H — Cleanup & Validation (Operational)
+# =========================================================
+- id: cleanup-search
+  description: Remove remaining Find artifacts and validate Graph migration
+  instructions: >
+    Ensure:
       - No EPiServer.Find references remain
       - Graph services are registered
       - Graph configuration exists
       - Build succeeds
 
-      Verify:
-        - Content is synchronized to Graph
-        - Queries return results
-        - IncludeTotal() works as expected
+    Verify queries return results and IncludeTotal() works.
 
-      Document troubleshooting steps if results are empty. [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
-
-  # =========================================================
-  # Phase I — Documentation
-  # =========================================================
-  - id: summary
-    description: Generate Graph migration report
-    instructions: >
-      Generate CMS13-Graph-Upgrade.md including:
-        - Package changes
-        - Startup & middleware changes
-        - Config applied
-        - Query rewrites
-        - Razor updates
-        - Manual Graph verification checklist [1](https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13)
+# =========================================================
+# Phase I — Documentation
+# =========================================================
+- id: generate-cms13-graph-upgrade-summary
+  description: Generate Graph migration audit documentation
+  breakingChange:
+    summary: Graph migration must be documented for validation and deployment.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Build and test
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/migrate-alloy-12-to-13#build-and-test
+  instructions: >
+    Generate CMS13-Graph-Upgrade.md documenting package changes,
+    registrations, configuration, query rewrites, and UI updates.

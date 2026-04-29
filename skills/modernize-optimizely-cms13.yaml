@@ -2,9 +2,9 @@ name: modernize-optimizely-cms12-to-cms13
 displayName: Comprehensive Optimizely CMS 12 → CMS 13 Upgrade
 description: >
   Performs a complete and auditable upgrade of an Optimizely CMS 12
-  solution to CMS 13 by upgrading the platform runtime, aligning
-  CMS packages and service registration, resolving API breaking
-  changes, and validating the CMS 13 application and admin experience.
+  solution to CMS 13 by upgrading the platform runtime, aligning CMS
+  packages and service registration, resolving API breaking changes,
+  and validating the CMS 13 application and admin experience.
 
 appliesTo:
   languages: [csharp]
@@ -13,116 +13,211 @@ appliesTo:
 
 sourceGuidance:
   - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13
+  - https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13
 
 guardrails:
+  - All build, restore, and run commands must use PowerShell syntax
+  - Do not suppress deprecated APIs via pragma or NoWarn
+  - Treat deprecated API warnings as visible and reviewable
   - Do not migrate search functionality (handled by Graph skill)
-  - Do not refactor business/domain logic
-  - Resolve obsolete APIs before upgrading CMS packages
+  - Do not refactor business or domain logic
   - CMS upgrade must succeed before search migration
   - Every referenced package must be explicitly registered
   - Stop immediately on platform, restore, or build failure
+  - Verification runs must not reintroduce suppressions
 
 tasks:
 
-  # =========================================================
-  # Phase A — Repository Audit & Preparation (READ‑ONLY)
-  # =========================================================
-  - analyze-repository-structure
-  - analyze-optimizely-footprint
-  - analyze-service-registration-patterns
-  - analyze-obsolete-warnings
-  - analyze-third-party-package-compatibility
-  - identify-removed-features:
-      includes:
-        - DynamicProperties
-        - Mirroring
-        - Legacy PlugIns
+# =========================================================
+# Phase A — Repository Audit & Preparation (READ‑ONLY)
+# =========================================================
+- analyze-repository-structure
+- analyze-optimizely-footprint
+- analyze-service-registration-patterns
+- analyze-obsolete-warnings
+- analyze-third-party-package-compatibility
+- identify-removed-features:
+    includes:
+      - DynamicProperties
+      - Mirroring
+      - Legacy PlugIns
 
-  # =========================================================
-  # Phase B — Preconditions & Blocking Validation
-  # =========================================================
-  - validate-current-target-framework
-  - validate-dotnet10-sdk-installed
-  - validate-database-backup-exists
-  - validate-no-unfixed-obsolete-apis
-  - validate-cms13-prerequisites
+# =========================================================
+# Phase B — Preconditions & Blocking Validation
+# =========================================================
+- validate-current-target-framework
+- validate-dotnet10-sdk-installed
+- validate-database-backup-exists
+- validate-no-unfixed-obsolete-apis
+- validate-cms13-prerequisites
 
-  # =========================================================
-  # Phase C — Platform Runtime Upgrade (MANDATORY)
-  # =========================================================
-  - upgrade-target-framework-to-net10
-  - update-global-json-if-present
-  - update-docker-images-if-present
-  - validate-build-after-platform-upgrade
-  - generate-platform-upgrade-report
+# =========================================================
+# Phase C — Platform Runtime Upgrade (MANDATORY)
+# =========================================================
+- upgrade-target-framework-to-net10
+- update-global-json-if-present
+- update-docker-images-if-present
+- validate-build-after-platform-upgrade
+- generate-platform-upgrade-report
 
-  # =========================================================
-  # Phase D — CMS Package Upgrade
-  # =========================================================
-  - inventory-nuget-packages
-  - upgrade-episerver-and-optimizely-packages-to-13
-  - align-package-versions
-  - remove-incompatible-third-party-packages
-  - validate-dotnet-restore-success
+# =========================================================
+# Phase D — CMS Package Upgrade
+# =========================================================
+- inventory-nuget-packages
+- upgrade-episerver-and-optimizely-packages-to-13:
+      instructions: >
+        Upgrade all EPiServer.* and Optimizely.* CMS packages
+        to their CMS 13–compatible versions.
+        Ensure no mixed major versions remain.
+- install-required-cms13-packages:
+    packages:
+      - EPiServer.CMS.UI.AspNetIdentity
+      - EPiServer.Cms.UI.VisitorGroups
+    instructions: >
+      CMS 13 removed these packages as transitive dependencies.
+      If the solution uses Identity or Visitor Groups functionality,
+      they MUST be explicitly added to the project file.
+- align-package-versions:
+    strategy: strict
+    instructions: >
+      Ensure all EPiServer.* and Optimizely.* packages target
+      the same CMS 13 release line to avoid NU1608 conflicts.
+- remove-incompatible-third-party-packages:
+    instructions: >
+      Remove or upgrade any third-party NuGet packages
+      that are not compatible with CMS 13 or .NET 10.
+- validate-dotnet-restore-success:
+    instructions: >
+      Run dotnet restore and fail immediately if:
+      - NU1202 (framework incompatibility)
+      - NU1608 (version constraint violation)
+      - missing transitive dependencies
 
-  # =========================================================
-  # Phase E — CMS 13 Package & Service Registration
-  # (VALIDATE → ENFORCE → VERIFY)
-  # =========================================================
-  - validate-required-cms13-packages
-  - validate-episerver-dependencyinjection-namespace
+# =========================================================
+# Phase E — CMS 13 Service Registration (VALIDATE → ENFORCE)
+# =========================================================
+- validate-episerver-dependencyinjection-namespace
+- enforce-addcms-or-full-granular-parity
+- fail-on-missing-cms-core-services
+- forbid-custom-replacement-services
+- remove-generated-cms-surrogate-services
+- validate-database-compatibility-level
+- enforce-database-compatibility-autoupgrade
+- validate-service-registration-build
 
-  - validate-addcms-or-granular-registration
-  - enforce-addcms-or-full-granular-parity
+# =========================================================
+# Phase F — CMS 13 API Breaking Changes (CANONICAL – COMPLETE)
+# =========================================================
 
-  - validate-removed-core-package-registrations
-  - enforce-removed-core-package-registrations
+- id: replace-sitedefinition-with-application-model
+  description: Replace legacy SiteDefinition APIs with the CMS 13 application model.
+  breakingChange:
+    summary: SiteDefinition is removed and replaced by the Application model in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: SiteDefinition replaced by Application model
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#sitedefinition-replaced-by-application-model
 
-  - validate-assembly-scanning-completeness
-  - enforce-assembly-scanning-failure-on-missing-add
+- id: replace-start-page-resolution
+  description: Replace ApplicationResolver.GetByContext usage with ContentReference.StartPage.
+  breakingChange:
+    summary: Start page resolution is simplified in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Start page resolution simplified
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#start-page-resolution-simplified
 
-  - validate-database-compatibility-level
-  - enforce-database-compatibility-autoupgrade
+- id: replace-pagereference-with-contentreference
+  description: Replace PageReference and PageLink usage with ContentReference and ContentLink.
+  breakingChange:
+    summary: CMS 13 unifies all content references under ContentReference.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: PageReference replaced by ContentReference
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#pagereference-replaced-by-contentreference
 
-  - validate-service-registration-build
+- id: replace-filtereditems-with-items
+  description: Replace ContentArea.FilteredItems with ContentArea.Items.
+  breakingChange:
+    summary: ContentArea.FilteredItems is removed in CMS 13 and replaced by Items with changed behavior.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: ContentArea.FilteredItems removed
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#contentarea-filtereditems-removed
 
-  # =========================================================
-  # Phase F — CMS 13 API Breaking Changes
-  # =========================================================
-  - replace-sitedefinition-with-application-model
-  - replace-start-page-resolution
-  - replace-pagereference-with-contentreference
-  - replace-filtereditems-with-items
-  - replace-initializationengine-assemblies
-  - remove-service-locator-usage
-  - update-initializable-modules
-  - update-content-type-repository-usage
-  - migrate-platform-htmlhelpers-to-taghelpers
+- id: replace-initializationengine-assemblies
+  description: Replace InitializationEngine.Assemblies with AppDomain assembly discovery.
+  breakingChange:
+    summary: InitializationEngine.Assemblies is removed in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: InitializationEngine.Assemblies removed
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#initializationengineassemblies
 
-  # =========================================================
-  # Phase G — Application Model Verification
-  # =========================================================
-  - validate-application-created-from-site
-  - validate-start-page-resolution
-  - document-application-model
+- id: remove-service-locator-usage
+  description: Replace ServiceLocator and Locate.Advanced usage with constructor injection.
+  breakingChange:
+    summary: Service locator APIs are removed and replaced with dependency injection.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Service locator pattern replaced by dependency injection
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#service-locator-pattern-replaced-by-dependency-injection
 
-  # =========================================================
-  # Phase H — Admin & UI Validation
-  # =========================================================
-  - validate-admin-url-changes
-  - validate-editor-ui-loads
-  - validate-content-creation-and-publishing
+- id: update-initializable-modules
+  description: Update InitializableModule code to resolve services from InitializationEngine.Services.
+  breakingChange:
+    summary: InitializableModule service resolution APIs changed in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: Initialization module API changes
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#initialization-module-changes
 
-  # =========================================================
-  # Phase I — Build & Runtime Stabilization
-  # =========================================================
-  - resolve-build-errors
-  - suppress-non-blocking-obsoletes-only
-  - run-cms-startup-validation
+- id: update-content-type-repository-usage
+  description: Remove generic type arguments from IContentTypeRepository usage.
+  breakingChange:
+    summary: IContentTypeRepository is no longer generic in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: IContentTypeRepository no longer generic
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/upgrade-to-cms-13#icontenttyperepository-no-longer-generic
 
-  # =========================================================
-  # Phase J — Documentation & Audit Artifacts
-  # =========================================================
-  - generate-cms13-upgrade-summary
-  - generate-breaking-changes-checklist
-  - generate-post-upgrade-validation-guide
+- id: migrate-platform-htmlhelpers-to-taghelpers
+  description: Replace legacy CMS HtmlHelpers with CMS 13 TagHelpers.
+  breakingChange:
+    summary: Platform navigation HtmlHelpers are replaced by TagHelpers in CMS 13.
+    appliesTo: CMS 12 → CMS 13
+    reference:
+      title: UI and rendering changes
+      url: https://docs.developers.optimizely.com/content-management-system/v13.0.0-CMS/docs/breaking-changes-in-cms-13#ui-and-rendering
+
+# =========================================================
+# Phase G — Application Model Verification
+# =========================================================
+- validate-application-created-from-site
+- validate-start-page-resolution
+- document-application-model
+
+# =========================================================
+# Phase H — Admin & UI Validation
+# =========================================================
+- validate-admin-url-changes
+- validate-editor-ui-loads
+- validate-content-creation-and-publishing
+
+# =========================================================
+# Phase I — Verification & Deprecation Exposure
+# =========================================================
+- verify-cms13-upgrade-state
+- detect-pragma-suppressions
+- detect-csproj-nowarn-settings
+- remove-pragma-warning-suppressions
+- enforce-powershell-dotnet-commands
+- rerun-build-with-visible-deprecations
+
+# =========================================================
+# Phase J — Documentation & Audit
+# =========================================================
+- generate-cms13-upgrade-summary
+- generate-breaking-changes-checklist
+- document-contentarea-filtering-behavior-change
+- generate-post-upgrade-validation-guide

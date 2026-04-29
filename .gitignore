@@ -11,6 +11,8 @@ artifacts/
 packages/
 bin/
 obj/
+*.log
+*.txt
 
 # Optimizely files
 *license.config

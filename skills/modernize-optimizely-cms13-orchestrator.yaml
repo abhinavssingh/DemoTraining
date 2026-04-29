@@ -19,7 +19,7 @@ guardrails:
   - This skill must not perform direct code refactoring
   - CMS upgrade must complete before search migration
   - Search & Navigation (EPiServer.Find) is not supported in CMS 13
-  - Graph migration is mandatory for CMS 13
+  - Graph migration is mandatory for CMS 13 when search functionality exists
   - Stop orchestration immediately if any stage fails
   - Each stage must produce its required outcomes
 
@@ -45,7 +45,7 @@ stages:
       - All EPiServer.* and Optimizely.* CMS packages are version 13
       - dotnet restore and dotnet build succeed with zero CMS errors
       - CMS services are registered via AddCms() or full granular parity
-      - Database compatibility level is validated or auto-upgraded
+      - Database compatibility level is validated or auto‑upgraded
       - CMS admin UI loads successfully (/ui/CMS or /Optimizely/CMS)
       - Application model migrated from Sites to Applications
       - CMS13-Upgrade-Summary.md generated
@@ -76,7 +76,7 @@ stages:
 
     requiredOutcome:
       - No EPiServer.Find, EPiServer.Find.Cms, or Find namespaces remain
-      - Optimizely Graph services registered correctly
+      - Optimizely Graph services registered correctly (only if search exists)
       - Search uses async Optimizely Graph APIs
       - Search behavior preserved (filtering, paging, sorting)
       - CMS13-Graph-Upgrade.md generated
@@ -97,7 +97,7 @@ stages:
 
     preconditions:
       - CMS 13 upgrade completed
-      - Graph migration completed
+      - Graph migration completed (or explicitly skipped for vanilla CMS 13)
 
     requiredOutcome:
       - No CMS 12 packages remain

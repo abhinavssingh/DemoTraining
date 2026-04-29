@@ -2,21 +2,18 @@ using DemoTraining.Extensions;
 using DemoTraining.Models.Media;
 using EPiServer.DataAccess;
 using EPiServer.Framework.Blobs;
-using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using Microsoft.Extensions.Options;
 
 namespace DemoTraining.Business.ScheduledJobs;
 
-[ScheduledPlugIn(
+[ScheduledJobAttribute(
     DisplayName = "ImportImagesScheduledJob",
     Description = "",
     GUID = "E710ECEB-84EA-49EE-A787-10E4711180C0",
     IntervalType = ScheduledIntervalType.Hours,
     IntervalLength = 12,
-    DefaultEnabled = true,
-    // TODO CMS13: SortIndex property removed from ScheduledPlugIn attribute in CMS 13
     Restartable = true)]
 public class ImportImagesScheduledJob : ScheduledJobBase
 {

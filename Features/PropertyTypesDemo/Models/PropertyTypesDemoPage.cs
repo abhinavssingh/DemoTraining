@@ -63,7 +63,7 @@ public class PropertyTypesDemoPage : SitePageData
     public virtual ContentReference ReferenceContentItem { get; set; }
 
     [Display(Name = "Reference a single page", Order = 20, GroupName = PropertyTypesDemoPageTabs.References)]
-    public virtual PageReference ReferencePage { get; set; }
+    public virtual ContentReference ReferencePage { get; set; }
 
     [AllowedTypes(typeof(BlockData))]
     [Display(Name = "Reference a single block", Order = 30, GroupName = PropertyTypesDemoPageTabs.References)]

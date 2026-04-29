@@ -21,6 +21,8 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IContentRepository repo = null;
     private readonly IConfiguration configuration;
     private readonly IContentLoader contentLoader;
+    // TODO CMS13: ISiteDefinitionRepository is deprecated. Use IApplicationRepository instead.
+    // CreateSiteDefinition/DeleteSiteDefinition methods need refactoring for CMS 13 Application model.
     private readonly ISiteDefinitionRepository siteDefinitionRepository;
     private readonly ILanguageBranchRepository languageBranchRepository;
     private readonly IActivityQueryService activityQueryService;
@@ -47,7 +49,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult CreateBlock(AdminContentPage currentPage, string heading, string text, ContentReference image, PageReference link)
+    public ActionResult CreateBlock(AdminContentPage currentPage, string heading, string text, ContentReference image, ContentReference link)
     {
         try
         {
@@ -66,7 +68,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
             block.Heading = heading;
             block.Text = text;
             block.Image = image ?? ContentReference.EmptyReference;
-            block.Link = link ?? PageReference.EmptyReference;
+            block.Link = link ?? ContentReference.EmptyReference;
 
             repo.Save(newBlock, SaveAction.Publish, AccessLevel.NoAccess);
             TempData["message"] = $"Block '{newBlock.Name}' was created.";
@@ -82,7 +84,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult UpdateBlock(AdminContentPage currentPage, ContentReference contentReference, string heading, string text, ContentReference image, PageReference link)
+    public ActionResult UpdateBlock(AdminContentPage currentPage, ContentReference contentReference, string heading, string text, ContentReference image, ContentReference link)
     {
         try
         {
@@ -102,7 +104,7 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
                 block.Heading = heading ?? block.Heading;
                 block.Text = text ?? block.Text;
                 if (image != null && !ContentReference.IsNullOrEmpty(image)) block.Image = image;
-                if (link != null && !PageReference.IsNullOrEmpty(link)) block.Link = link;
+                if (link != null && !ContentReference.IsNullOrEmpty(link)) block.Link = link;
 
                 repo.Save(blockContent, SaveAction.Publish, AccessLevel.NoAccess);
                 TempData["message"] = "Block was updated.";
@@ -213,6 +215,11 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         }
     }
 
+    // TODO CMS13: CreateSiteDefinition uses deprecated SiteDefinition and ISiteDefinitionRepository
+    // CMS 13 uses Applications model instead of SiteDefinition. This admin feature needs investigation:
+    // 1. Determine if site creation is still needed in CMS 13 Application model
+    // 2. Refactor using IApplicationRepository if available, or remove if Applications are configured via UI only
+    // 3. Deprecation warnings are intentionally left visible to track this work
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult CreateSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
@@ -259,6 +266,11 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 
+    // TODO CMS13: DeleteSiteDefinition uses deprecated SiteDefinition and ISiteDefinitionRepository
+    // CMS 13 uses Applications model instead of SiteDefinition. This admin feature needs investigation:
+    // 1. Determine if site deletion is still needed in CMS 13 Application model
+    // 2. Refactor using IApplicationRepository if available, or remove if Applications are managed via UI only
+    // 3. Deprecation warnings are intentionally left visible to track this work
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult DeleteSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
