@@ -32,9 +32,8 @@ namespace DemoTraining.Business
 
         public virtual LayoutModel CreateLayoutModel(ContentReference currentContentLink, HttpContext httpContext)
         {
-            // TODO CMS13: SiteDefinition.Current is deprecated. Use IApplicationResolver instead.
-            // This is tracked in the CMS 13 deprecation analysis.
-            var startPageContentLink = SiteDefinition.Current.StartPage;
+            // CMS 13: SiteDefinition.Current replaced with ContentReference.StartPage
+            var startPageContentLink = ContentReference.StartPage;
 
             // Use the content link with version information when editing the startpage,
             // otherwise the published version will be used when rendering the props below.
@@ -48,7 +47,7 @@ namespace DemoTraining.Business
             return new LayoutModel
             {
                 Logotype = startPage.SiteLogotype,
-                LogotypeLinkUrl = new HtmlString(_urlResolver.GetUrl(SiteDefinition.Current.StartPage)),
+                LogotypeLinkUrl = new HtmlString(_urlResolver.GetUrl(ContentReference.StartPage)),
                 ProductPages = startPage.ProductPageLinks,
                 ResourcePages = startPage.ResourcePageLinks,
                 CompanyPages = startPage.CompanyPageLinks,
@@ -69,12 +68,11 @@ namespace DemoTraining.Business
         {
             var currentContent = _contentLoader.Get<IContent>(contentLink);
 
-            // TODO CMS13: SiteDefinition.Current and .RootPage are deprecated in CMS 13.
-            // Should be replaced with IApplicationResolver and SystemDefinition.
+            // CMS 13: SiteDefinition.Current replaced with ContentReference.StartPage and SystemDefinition
             static bool isSectionRoot(ContentReference contentReference) =>
                ContentReference.IsNullOrEmpty(contentReference) ||
-               contentReference.Equals(SiteDefinition.Current.StartPage) ||
-               contentReference.Equals(SiteDefinition.Current.RootPage);
+                contentReference.Equals(ContentReference.StartPage) ||
+                contentReference.Equals(SystemDefinition.Current.RootPage);
 
             if (isSectionRoot(currentContent.ParentLink))
             {

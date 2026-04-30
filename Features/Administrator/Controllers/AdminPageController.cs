@@ -8,7 +8,6 @@ using EPiServer.DataAbstraction.Activities;
 using EPiServer.DataAccess;
 using EPiServer.Framework.DataAnnotations;
 using EPiServer.Security;
-using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,9 +20,6 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IContentRepository repo = null;
     private readonly IConfiguration configuration;
     private readonly IContentLoader contentLoader;
-    // TODO CMS13: ISiteDefinitionRepository is deprecated. Use IApplicationRepository instead.
-    // CreateSiteDefinition/DeleteSiteDefinition methods need refactoring for CMS 13 Application model.
-    private readonly ISiteDefinitionRepository siteDefinitionRepository;
     private readonly ILanguageBranchRepository languageBranchRepository;
     private readonly IActivityQueryService activityQueryService;
     private readonly CategoryRepository categoryRepository;
@@ -31,14 +27,13 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
     private readonly IOptions<EpiserverOptions> episerverOptions;
 
 
-    public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader, ISiteDefinitionRepository siteDefinitionRepository,
+    public AdminPageController(IContentRepository repo, IConfiguration configuration, IContentLoader contentLoader,
         ILanguageBranchRepository languageBranchRepository, IActivityQueryService activityQueryService, CategoryRepository categoryRepository,
         IContentSecurityRepository contentSecurityRepository, IOptions<EpiserverOptions> episerverOptions)
     {
         this.repo = repo;
         this.configuration = configuration;
         this.contentLoader = contentLoader;
-        this.siteDefinitionRepository = siteDefinitionRepository;
         this.languageBranchRepository = languageBranchRepository;
         this.activityQueryService = activityQueryService;
         this.categoryRepository = categoryRepository;
@@ -215,92 +210,100 @@ public class AdminPageController : PageControllerBase<AdminContentPage>
         }
     }
 
-    // TODO CMS13: CreateSiteDefinition uses deprecated SiteDefinition and ISiteDefinitionRepository
-    // CMS 13 uses Applications model instead of SiteDefinition. This admin feature needs investigation:
-    // 1. Determine if site creation is still needed in CMS 13 Application model
-    // 2. Refactor using IApplicationRepository if available, or remove if Applications are configured via UI only
-    // 3. Deprecation warnings are intentionally left visible to track this work
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult CreateSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    // CMS13: DISABLED - SiteDefinition and ISiteDefinitionRepository are removed in CMS 13.
+    // The Application model provides the CMS 13 equivalent functionality.
+    // These methods should be refactored using IApplicationRepository when site creation is needed.
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public ActionResult CreateSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    // {
+    //     try
+    //     {
+    //         if (string.IsNullOrWhiteSpace(siteName) || string.IsNullOrWhiteSpace(hostName))
+    //         {
+    //             TempData["message"] = "Site name and host name are required.";
+    //             return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    //         }
+    //
+    //         // Check for existing site definitions by name or host
+    //         var existing = siteDefinitionRepository.List()
+    //             .FirstOrDefault(sd => string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase)
+    //                 || sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase)));
+    //
+    //         if (existing != null)
+    //         {
+    //             TempData["message"] = "A site definition with that name or host already exists.";
+    //             return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    //         }
+    //
+    //         var siteDef = new SiteDefinition
+    //         {
+    //             Name = siteName,
+    //             SiteUrl = new Uri($"http://{hostName}"),
+    //             StartPage = currentPage.ContentLink
+    //         };
+    //
+    //         // Add host definition
+    //         var hostDef = new HostDefinition { Name = hostName };
+    //         siteDef.Hosts.Add(hostDef);
+    //
+    //         siteDefinitionRepository.Save(siteDef);
+    //
+    //         TempData["message"] = $"Site definition '{siteName}' created for host '{hostName}'.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         TempData["message"] = $"Error creating site definition: {ex.Message}";
+    //     }
+    //
+    //     return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    // }
+
+    public ActionResult CreateSiteDefinition_Disabled_CMS13(AdminContentPage currentPage, string siteName, string hostName)
     {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(siteName) || string.IsNullOrWhiteSpace(hostName))
-            {
-                TempData["message"] = "Site name and host name are required.";
-                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-            }
-
-            // Check for existing site definitions by name or host
-            var existing = siteDefinitionRepository.List()
-                .FirstOrDefault(sd => string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase)
-                    || sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase)));
-
-            if (existing != null)
-            {
-                TempData["message"] = "A site definition with that name or host already exists.";
-                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-            }
-
-            var siteDef = new SiteDefinition
-            {
-                Name = siteName,
-                SiteUrl = new Uri($"http://{hostName}"),
-                StartPage = currentPage.ContentLink
-            };
-
-            // Add host definition
-            var hostDef = new HostDefinition { Name = hostName };
-            siteDef.Hosts.Add(hostDef);
-
-            siteDefinitionRepository.Save(siteDef);
-
-            TempData["message"] = $"Site definition '{siteName}' created for host '{hostName}'.";
-        }
-        catch (Exception ex)
-        {
-            TempData["message"] = $"Error creating site definition: {ex.Message}";
-        }
-
+        TempData["message"] = "Site creation via admin page is disabled in CMS 13. Use the admin UI or IApplicationRepository API instead.";
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 
-    // TODO CMS13: DeleteSiteDefinition uses deprecated SiteDefinition and ISiteDefinitionRepository
-    // CMS 13 uses Applications model instead of SiteDefinition. This admin feature needs investigation:
-    // 1. Determine if site deletion is still needed in CMS 13 Application model
-    // 2. Refactor using IApplicationRepository if available, or remove if Applications are managed via UI only
-    // 3. Deprecation warnings are intentionally left visible to track this work
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult DeleteSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    // CMS13: DISABLED - SiteDefinition and ISiteDefinitionRepository are removed in CMS 13.
+    // The Application model provides the CMS 13 equivalent functionality.
+    // These methods should be refactored using IApplicationRepository when site deletion is needed.
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public ActionResult DeleteSiteDefinition(AdminContentPage currentPage, string siteName, string hostName)
+    // {
+    //     try
+    //     {
+    //         if (string.IsNullOrWhiteSpace(siteName) && string.IsNullOrWhiteSpace(hostName))
+    //         {
+    //             TempData["message"] = "Provide site name or host name to delete a site definition.";
+    //             return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    //         }
+    //
+    //         var existing = siteDefinitionRepository.List()
+    //             .FirstOrDefault(sd => (!string.IsNullOrWhiteSpace(siteName) && string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase))
+    //                 || (sd.Hosts != null && !string.IsNullOrWhiteSpace(hostName) && sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase))));
+    //
+    //         if (existing == null)
+    //         {
+    //             TempData["message"] = "No matching site definition found to delete.";
+    //             return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    //         }
+    //
+    //         siteDefinitionRepository.Delete(existing.Id);
+    //         TempData["message"] = $"Site definition '{existing.Name}' was deleted.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         TempData["message"] = $"Error deleting site definition: {ex.Message}";
+    //     }
+    //
+    //     return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
+    // }
+
+    public ActionResult DeleteSiteDefinition_Disabled_CMS13(AdminContentPage currentPage, string siteName, string hostName)
     {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(siteName) && string.IsNullOrWhiteSpace(hostName))
-            {
-                TempData["message"] = "Provide site name or host name to delete a site definition.";
-                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-            }
-
-            var existing = siteDefinitionRepository.List()
-                .FirstOrDefault(sd => (!string.IsNullOrWhiteSpace(siteName) && string.Equals(sd.Name, siteName, StringComparison.OrdinalIgnoreCase))
-                    || (sd.Hosts != null && !string.IsNullOrWhiteSpace(hostName) && sd.Hosts.Any(h => string.Equals(h.Name, hostName, StringComparison.OrdinalIgnoreCase))));
-
-            if (existing == null)
-            {
-                TempData["message"] = "No matching site definition found to delete.";
-                return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
-            }
-
-            siteDefinitionRepository.Delete(existing.Id);
-            TempData["message"] = $"Site definition '{existing.Name}' was deleted.";
-        }
-        catch (Exception ex)
-        {
-            TempData["message"] = $"Error deleting site definition: {ex.Message}";
-        }
-
+        TempData["message"] = "Site deletion via admin page is disabled in CMS 13. Use the admin UI or IApplicationRepository API instead.";
         return Redirect(UrlResolver.Current.GetUrl(currentPage.ContentLink));
     }
 
