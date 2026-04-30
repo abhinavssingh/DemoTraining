@@ -57,5 +57,7 @@
     <None Include=".github\upgrades\optimizely-cms13-upgrade\execution-log.md" />
     <None Include=".github\upgrades\optimizely-cms13-upgrade\scenario-instructions.md" />
     <None Include=".github\upgrades\optimizely-cms13-upgrade\tasks.md" />
+    <None Include=".github\upgrades\optimizely-cms13-upgrade\tasks\01.03-cms-api-migration\progress-details.md" />
+    <None Include=".github\upgrades\optimizely-cms13-upgrade\tasks\01.04-cms-verification\progress-details.md" />
   </ItemGroup>
 </Project>
