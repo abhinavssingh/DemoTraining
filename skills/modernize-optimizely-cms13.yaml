@@ -54,11 +54,46 @@ tasks:
 # =========================================================
 # Phase C — Platform Runtime Upgrade (MANDATORY)
 # =========================================================
-- upgrade-target-framework-to-net10
-- update-global-json-if-present
-- update-docker-images-if-present
-- validate-build-after-platform-upgrade
-- generate-platform-upgrade-report
+
+- id: upgrade-target-framework-to-net10
+  description: Upgrade the solution TargetFramework to net10.0 if required.
+  precondition:
+    skipIf:
+      targetFramework: net10.0
+      message: >
+        Target framework is already net10.0.
+        Skipping framework upgrade and proceeding with validation only.
+  actions:
+    - upgrade-target-framework: net10.0
+
+
+- id: update-global-json-if-present
+  description: Update or align global.json with .NET 10 SDK requirements.
+  precondition:
+    skipIf:
+      dotnetSdk: "10.*"
+      message: >
+        global.json already aligns with .NET 10 SDK.
+        No update required.
+
+
+- id: update-docker-images-if-present
+  description: Update Docker base images to .NET 10 when applicable.
+  precondition:
+    skipIf:
+      baseImageContains: dotnet:10
+      message: >
+        Docker base images already target .NET 10.
+        Skipping Docker image updates.
+
+        
+- id: validate-build-after-platform-upgrade
+  description: Validate solution builds successfully on .NET 10.
+  enforcement:
+    requiredActions:
+      - Run dotnet build using PowerShell
+    failureConditions:
+      - Build fails on net10.0
 
 # =========================================================
 # Phase D — CMS Package Upgrade
@@ -109,10 +144,10 @@ tasks:
 
   failIf:
     - Any call to:
-        - AddCms()
-        - AddCmsCore()
-        - AddCmsUI()
-        - AddAdmin()
+        - "*AddCms()"
+        - "*AddCmsCore()"
+        - "*AddCmsUI()"
+        - "*AddAdmin()"
         - exists without EPiServer.DependencyInjection imported
 
       
@@ -130,16 +165,16 @@ tasks:
       - ONE of the following MUST be true:
           - services.AddCms()
           - services include ALL of:
-              - AddCmsHost()
-              - AddCmsCore()
-              - AddCmsHtmlHelpers()
-              - AddCmsTagHelpers()
-              - AddCmsUI()
-              - AddAdmin()
-              - AddTinyMce()
-              - AddCmsImageSharpImageLibrary()
-              - AddOptimizelyCmsServicev1()
-              - AddOAuthEndpoints()
+              - "*AddCmsHost()"
+              - "*AddCmsCore()"
+              - "*AddCmsHtmlHelpers()"
+              - "*AddCmsTagHelpers()"
+              - "*AddCmsUI()"
+              - "*AddAdmin()"
+              - "*AddTinyMce()"
+              - "*AddCmsImageSharpImageLibrary()"
+              - "*AddOptimizelyCmsServicev1()"
+              - "*AddOAuthEndpoints()"
 
   failIf:
     - Partial granular CMS registration detected
@@ -185,10 +220,10 @@ tasks:
 
   failIf:
     - Custom implementation registered for:
-        - IContentRepository
-        - IContentLoader
-        - IApplicationResolver
-        - IServiceAccessor
+        - "*IContentRepository"
+        - "*IContentLoader"
+        - "*IApplicationResolver"
+        - "*IServiceAccessor"
 
 
 - id: validate-database-compatibility-level
@@ -322,11 +357,10 @@ tasks:
 
   enforcement:
     forbiddenPatterns:
-      - PageReference
-      - PageData.PageLink
-      - PageLink
-      - new PageReference(
-      - using EPiServer.Core.PageReference
+      - "*PageReference"
+      - "*PageData.PageLink"
+      - "*PageLink"
+      - "*using EPiServer.Core.PageReference"
 
     requiredActions:
       - Replace all PageReference variables, parameters, and return types with ContentReference
@@ -605,7 +639,7 @@ tasks:
       - Any legacy CMS HtmlHelper usage remains in Razor views
 
 
-- id: replace-episerver-web-hosting-environment- id: replace- compliance in upgrade summary
+- id: replace-episerver-web-hosting-environment
 
   failIf:
     - Any reference to:
